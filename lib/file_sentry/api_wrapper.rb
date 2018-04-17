@@ -21,14 +21,14 @@ class APIWrapper
     op_file.data_id = response["data_id"]
   end
 
-  def get_hash
+  def get_hash_check
     raise "No hash set" if op_file.hash.nil?
     response = HTTParty.get(
       "#{BASE_URL}/hash/#{op_file.hash}",
       headers: {"apikey"=> API_KEY}
     )
     error_check(response)
-    op_file.data_id = response["data_id"]
+    does_hash_exist?(response, hash)
   end
 
   def get_data_id
@@ -44,9 +44,18 @@ class APIWrapper
 
   private
 
+  def does_hash_exist?(response, hash)
+    if response[hash]
+      false
+    else
+      op_file.data_id = response["data_id"]
+      true
+    end
+  end
+
   def print_response_status(response)
     progress = response["process_info"]["progress_percentage"]
-    puts
+    puts "Scan Progress: #{progress}%"
   end
 
   def error_check(response)
