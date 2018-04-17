@@ -12,16 +12,26 @@ class APIWrapper
   end
 
   def post_file
-    response = HTTParty.post("#{BASE_URL}/file/", {apikey: API_KEY})
+    response = HTTParty.post(
+        "#{BASE_URL}/file/",
+        headers: {"apikey"=> API_KEY},
+        body: {"filename" => File.read(op_file.filepath)}
+      )
   end
 
   def get_hash
-    response = HTTParty.get("#{BASE_URL}/hash/#{op_file.hash}", {apikey: API_KEY})
+    response = HTTParty.get(
+      "#{BASE_URL}/hash/#{op_file.hash}",
+      headers: {"apikey"=> API_KEY}
+    )
   end
 
   def get_data_id
     raise "No data_id set" if op_file.data_id.nil?
-    response = HTTParty.get("#{BASE_URL}/file/#{op_file.data_id}", {apikey: API_KEY})
+    response = HTTParty.get(
+      "#{BASE_URL}/file/#{op_file.data_id}",
+      headers: {"apikey"=> API_KEY}
+    )
   end
 
 end
