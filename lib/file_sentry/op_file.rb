@@ -8,13 +8,13 @@ class OPFile
     self.api_wrapper ||= APIWrapper.new(self)
   end
 
-  def process_file
-    #change this to send :md5_hash or whatever
-    file_hash.md5_hash
-    if api_wrapper.get_hash
-      api_wrapper.get_data_id
-    end
+  def process_file(encrypt)
+    file_hash.hash_file(encrypt)
+    api_wrapper.scan_file
+    binding.pry
+  end
 
+  def print_result
   end
 
 end

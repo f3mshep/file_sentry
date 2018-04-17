@@ -11,6 +11,28 @@ class APIWrapper
     attributes.each {|attribute, value| self.send("#{attribute}=", value)}
   end
 
+  def scan_file
+    hash_response = get_hash
+    if does_hash_exist?(hash_response, op_file.hash)
+      set_data_id(hash_response)
+    else
+      set_data_id(post_file)
+    end
+    monitor_scan
+  end
+
+  private
+
+  def monitor_scan
+    response = get_data_id
+    until is_scan_complete?(response)
+      sleep(0.1)
+      print_response_status(response)
+      response = get_data_id
+    end
+    op_file.scan_results = response["scan_results"]
+  end
+
   def post_file
     response = HTTParty.post(
         "#{BASE_URL}/file/",
@@ -19,16 +41,17 @@ class APIWrapper
       )
     error_check(response)
     op_file.data_id = response["data_id"]
+    response
   end
 
-  def get_hash_check
+  def get_hash
     raise "No hash set" if op_file.hash.nil?
     response = HTTParty.get(
       "#{BASE_URL}/hash/#{op_file.hash}",
       headers: {"apikey"=> API_KEY}
     )
     error_check(response)
-    does_hash_exist?(response, hash)
+    response
   end
 
   def get_data_id
@@ -38,17 +61,17 @@ class APIWrapper
       headers: {"apikey"=> API_KEY}
     )
     error_check(response)
-    print_response_status(response)
-    op_file.scan_results = response["scan_results"] if is_scan_complete?(response)
+    response
   end
 
-  private
+  def set_data_id(response)
+    op_file.data_id = response["data_id"]
+  end
 
   def does_hash_exist?(response, hash)
     if response[hash]
       false
     else
-      op_file.data_id = response["data_id"]
       true
     end
   end
