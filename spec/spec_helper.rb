@@ -1,14 +1,18 @@
 require "bundler/setup"
 require "file_sentry"
+require_relative "../config/environment.rb"
+require "pry"
 
 RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = ".rspec_status"
+  # Use color in STDOUT
+  config.color = true
 
-  # Disable RSpec exposing methods globally on `Module` and `main`
-  config.disable_monkey_patching!
+  # Use color not only in STDOUT but also in pagers and files
+  config.tty = true
 
-  config.expect_with :rspec do |c|
-    c.syntax = :expect
-  end
+  # Use the specified formatter
+  config.formatter = :documentation # :progress, :html,
+                                    # :json, CustomFormatterClass
+
+
 end

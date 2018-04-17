@@ -6,12 +6,10 @@ require "file_sentry/version"
 Gem::Specification.new do |spec|
   spec.name          = "file_sentry"
   spec.version       = FileSentry::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["<github email address>"]
-
-  spec.summary       = %q{TODO: Write a short summary, because RubyGems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.authors       = ["Alexandra Wright"]
+  spec.email         = ["superbiscuit@gmail.com"]
+  spec.summary       = %q{A command line utility to scan files for malware risks. Uses the OPSWAT Defender Cloud API.}
+  spec.homepage      = "https://github.com/f3mshep/file_sentry"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -33,4 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "pry"
+
 end
