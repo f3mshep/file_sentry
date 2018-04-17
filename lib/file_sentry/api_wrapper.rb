@@ -1,6 +1,4 @@
-class OPFile
-
-  attr_accessor :filepath, :hash, :data_id
+class APIWrapper
 
   def initialize(attributes)
     attributes.each {|attribute, value| self.send("#{attribute}=", value)}
