@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib", "config"]
 
 
+  spec.add_runtime_dependency "dotenv"
   spec.add_runtime_dependency "httparty"
   spec.add_runtime_dependency "colorize"
 

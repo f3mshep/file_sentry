@@ -1,7 +1,6 @@
 class APIWrapper
 
   BASE_URL = 'https://api.metadefender.com/v2'
-  API_KEY = "9c2b11386f6d45999252d497855a3b0b"
 
   attr_accessor :op_file
 
@@ -21,11 +20,14 @@ class APIWrapper
 
   private
 
+  def api_key
+    FileSentry.configuration.access_key
+  end
+
   def monitor_scan
     response = get_data_id
     until is_scan_complete?(response)
       sleep(0.1)
-      #print_response_status(response)
       response = get_data_id
     end
     op_file.scan_results = response["scan_results"]
@@ -34,7 +36,7 @@ class APIWrapper
   def post_file
     response = HTTParty.post(
         "#{BASE_URL}/file/",
-        headers: {"apikey"=> API_KEY},
+        headers: {"apikey"=> api_key},
         body: {"filename" => File.open(op_file.filepath)}
       )
     error_check(response)
@@ -45,7 +47,7 @@ class APIWrapper
     raise "No hash set" if op_file.hash.nil?
     response = HTTParty.get(
       "#{BASE_URL}/hash/#{op_file.hash}",
-      headers: {"apikey"=> API_KEY}
+      headers: {"apikey"=> api_key}
     )
     error_check(response)
     response
@@ -55,7 +57,7 @@ class APIWrapper
     raise "No data_id set" if op_file.data_id.nil?
     response = HTTParty.get(
       "#{BASE_URL}/file/#{op_file.data_id}",
-      headers: {"apikey"=> API_KEY}
+      headers: {"apikey"=> api_key}
     )
     error_check(response)
     response
@@ -71,10 +73,6 @@ class APIWrapper
     else
       true
     end
-  end
-
-  def print_response_status(response)
-    puts "Scan Progress: #{find_progress(response)}%"
   end
 
   def error_check(response)
