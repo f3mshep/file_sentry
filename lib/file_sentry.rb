@@ -1,5 +1,3 @@
-require 'file_sentry/configuration'
-
 module FileSentry
 
   class << self
