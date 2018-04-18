@@ -1,5 +1,3 @@
-require 'httparty'
-
 class APIWrapper
 
   BASE_URL = 'https://api.metadefender.com/v2'
@@ -27,7 +25,7 @@ class APIWrapper
     response = get_data_id
     until is_scan_complete?(response)
       sleep(0.1)
-      print_response_status(response)
+      #print_response_status(response)
       response = get_data_id
     end
     op_file.scan_results = response["scan_results"]
@@ -37,10 +35,9 @@ class APIWrapper
     response = HTTParty.post(
         "#{BASE_URL}/file/",
         headers: {"apikey"=> API_KEY},
-        body: {"filename" => File.read(op_file.filepath)}
+        body: {"filename" => File.open(op_file.filepath)}
       )
     error_check(response)
-    op_file.data_id = response["data_id"]
     response
   end
 
@@ -77,8 +74,7 @@ class APIWrapper
   end
 
   def print_response_status(response)
-    progress = response["process_info"]["progress_percentage"]
-    puts "Scan Progress: #{progress}%"
+    puts "Scan Progress: #{find_progress(response)}%"
   end
 
   def error_check(response)
@@ -86,7 +82,16 @@ class APIWrapper
   end
 
   def is_scan_complete?(response)
-    response["process_info"]["progress_percentage"] == 100
+    find_progress(response) == 100
+  end
+
+  def find_progress(response)
+    begin
+      progress = response["process_info"]["progress_percentage"]
+    rescue
+      progress = response["scan_results"]["scan_details"]["progress_percentage"]
+    end
+    progress ||= 0
   end
 
 end

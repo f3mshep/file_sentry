@@ -12,11 +12,9 @@ describe APIWrapper do
     end
   end
 
-  describe "#post_file" do
-    it "makes a POST request to the correct URL" do
-      @api_wrapper.post_file
-    end
-    it "has a file in the body payload" do
+  describe "#scan_file" do
+    it "scans file with OPSWAT" do
+      @api_wrapper.scan_file
     end
   end
 end

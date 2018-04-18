@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require_relative "../config/environment"
+require 'pry'
+
+filepath = ARGV[0]
+encryption = ARGV[1]
+
+op = CommandLine.new({filepath: filepath, encryption: encryption})
+op.start_utility
+

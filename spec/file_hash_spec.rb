@@ -18,23 +18,17 @@ describe FileHash do
     end
   end
 
-  describe "#md5_hash" do
-    it "generates and sets an MD5 hash" do
-      @file_hash.md5_hash
+  describe "#file_hash" do
+    it "can generate an MD5 hash" do
+      @op.hash_file("md5")
       expect(@op_file.hash).to eq(hashed_file[:md5])
     end
-  end
-
-  describe "sha1_hash" do
-    it "generates and sets a SHA1 hash" do
-      @file_hash.sha1_hash
+    it "can generate a SHA1 hash" do
+      @op.hash_file("sh1")
       expect(@op_file.hash).to eq(hashed_file[:sha1])
     end
-  end
-
-  describe "sha256_hash" do
-    it "generates and sets a SHA256 hash" do
-      @file_hash.sha256_hash
+    it "can generate a SHA256 hash" do
+      @op.hash_file("sh256")
       expect(@op_file.hash).to eq(hashed_file[:sha256])
     end
   end

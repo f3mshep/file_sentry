@@ -1,5 +1,3 @@
-require 'digest'
-
 class FileHash
 
   attr_accessor :op_file
@@ -10,7 +8,7 @@ class FileHash
 
   def hash_file(encryption)
     begin
-      self.send("digest_#{encryption}")
+      self.send("digest_#{encryption.downcase}")
     rescue
       raise "No encryption found for: #{encryption}"
     end
