@@ -12,23 +12,17 @@ describe FileHash do
     @file_hash = FileHash.new({op_file: @op_file})
   end
 
-  describe ".new" do
-    it "initializes with a op_file instance" do
-      expect(@file_hash.op_file).to eq(@op_file)
-    end
-  end
-
   describe "#file_hash" do
     it "can generate an MD5 hash" do
-      @op.hash_file("md5")
+      @file_hash.hash_file("md5")
       expect(@op_file.hash).to eq(hashed_file[:md5])
     end
     it "can generate a SHA1 hash" do
-      @op.hash_file("sh1")
+      @file_hash.hash_file("sha1")
       expect(@op_file.hash).to eq(hashed_file[:sha1])
     end
     it "can generate a SHA256 hash" do
-      @op.hash_file("sh256")
+      @file_hash.hash_file("sha256")
       expect(@op_file.hash).to eq(hashed_file[:sha256])
     end
   end

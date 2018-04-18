@@ -12,6 +12,7 @@ class CommandLine
     op_file.filepath = filepath
     if filepath
       analyze_file
+      exit
     else
       show_usage
       show_config

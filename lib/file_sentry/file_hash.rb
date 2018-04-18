@@ -10,6 +10,7 @@ class FileHash
     begin
       self.send("digest_#{encryption.downcase}")
     rescue
+      binding.pry
       raise "No encryption found for: #{encryption}"
     end
   end
