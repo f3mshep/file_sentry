@@ -8,7 +8,7 @@ class OPFile
     self.api_wrapper ||= APIWrapper.new({op_file: self})
   end
 
-  def process_file(encrypt = "md5")
+  def process_file(encrypt)
     check_file
     file_hash.hash_file(encrypt)
     api_wrapper.scan_file

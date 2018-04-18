@@ -10,7 +10,6 @@ class FileHash
     begin
       self.send("digest_#{encryption.downcase}")
     rescue
-      binding.pry
       raise "No encryption found for: #{encryption}"
     end
   end
@@ -18,18 +17,18 @@ class FileHash
   private
 
   def digest_md5
-    digest = Digest::MD5.hexdigest(File.read(op_file.filepath))
-    op_file.hash = digest.upcase
+    digest = Digest::MD5.file op_file.filepath
+    op_file.hash = digest.hexdigest.upcase
   end
 
   def digest_sha1
-    digest = Digest::SHA1.hexdigest(File.read(op_file.filepath))
-    op_file.hash = digest.upcase
+    digest = Digest::SHA1.file op_file.filepath
+    op_file.hash = digest.hexdigest.upcase
   end
 
   def digest_sha256
-    digest = Digest::SHA256.hexdigest(File.read(op_file.filepath))
-    op_file.hash = digest.upcase
+    digest = Digest::SHA256.file op_file.filepath
+    op_file.hash = digest.hexdigest.upcase
   end
 
 end

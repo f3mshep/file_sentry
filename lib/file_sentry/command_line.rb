@@ -23,8 +23,9 @@ class CommandLine
   private
 
   def analyze_file
+    encrypt = encryption || "md5"
     print "Analyzing File... "
-    show_wait_spinner { op_file.process_file }
+    show_wait_spinner { op_file.process_file(encrypt) }
     op_file.print_result
   end
 
