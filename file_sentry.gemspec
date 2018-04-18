@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f|  File.basename(f) }
   spec.require_paths = ["lib", "config"]
 
-  spec.add_runtime_dependency "digest"
+
   spec.add_runtime_dependency "httparty"
   spec.add_runtime_dependency "colorize"
 
