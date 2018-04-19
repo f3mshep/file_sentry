@@ -1,0 +1,205 @@
+Script started on 2018-04-18 17:57:01-0700
+]0;alexandra@riptide-replicator: ~/code/file_sentry/spec[01;32malexandra@riptide-replicator[00m:[01;34m~/code/file_sentry/spec[00m$ file_sentry fake_infected_ffile.mean 
+Analyzing File... [0;94;49m⣷[0m[0;94;49m⣯[0m[0;94;49m⣟[0m[0;94;49m⡿[0m[0;94;49m⢿[0m[0;94;49m⣻[0m
+
+
+
+
+
+
+
+
+
+Filename: fake_infected_file.mean
+Overall Status: [0;31;49mInfected[0m
+
+Engine: Zoner
+Threats Found: [0;31;49mEICAR.Test.File-NoVirus[0m
+Scan Result: 1
+Time: 2018-04-19T00:00:00.000Z
+
+Engine: Zillya!
+Threats Found: [0;31;49mEICAR.TestFile[0m
+Scan Result: 1
+Time: 2018-04-17T12:52:00.000Z
+
+Engine: VirusBlokAda
+Threats Found: [0;31;49mEICAR-Test-File[0m
+Scan Result: 1
+Time: 2018-04-14T10:58:00.000Z
+
+Engine: TrendMicro House Call
+Threats Found: [0;31;49mEicar_test_file[0m
+Scan Result: 1
+Time: 2018-04-17T21:06:00.000Z
+
+Engine: TrendMicro
+Threats Found: [0;31;49mEicar_test_file[0m
+Scan Result: 1
+Time: 2018-04-18T09:02:00.000Z
+
+Engine: Total Defense
+Threats Found: [0;31;49mthe EICAR test string[0m
+Scan Result: 1
+Time: 2018-04-17T00:00:00.000Z
+
+Engine: ThreatTrack
+Threats Found: [0;31;49mEICAR (v)[0m
+Scan Result: 1
+Time: 2018-04-15T08:10:00.000Z
+
+Engine: SUPERAntiSpyware
+Threats Found: [0;31;49mNotAThreat.EICAR[TestFile][0m
+Scan Result: 1
+Time: 2018-04-18T21:38:00.000Z
+
+Engine: Sophos
+Threats Found: [0;31;49mEICAR-AV-Test[0m
+Scan Result: 1
+Time: 2018-04-17T04:37:00.000Z
+
+Engine: Quick Heal
+Threats Found: [0;31;49mEICAR.TestFile[0m
+Scan Result: 1
+Time: 2018-04-17T03:34:00.000Z
+
+Engine: Preventon
+Threats Found: [0;31;49mEICAR-AV-Test[0m
+Scan Result: 1
+Time: 2018-04-18T19:50:00.000Z
+
+Engine: nProtect
+Threats Found: [0;31;49mEICAR-Test-File[0m
+Scan Result: 1
+Time: 2018-04-17T05:00:00.000Z
+
+Engine: NANOAV
+Threats Found: [0;31;49mMarker.Dos.EICAR.dymlmx[0m
+Scan Result: 1
+Time: 2018-04-17T23:58:00.000Z
+
+Engine: McAfee
+Threats Found: [0;31;49mEICAR test file[0m
+Scan Result: 1
+Time: 2018-04-17T00:00:00.000Z
+
+Engine: K7
+Threats Found: [0;31;49mEICAR_Test_File[0m
+Scan Result: 1
+Time: 2018-04-18T01:03:00.000Z
+
+Engine: Ikarus
+Threats Found: [0;31;49mEICAR-Test-File[0m
+Scan Result: 1
+Time: 2018-04-18T18:09:14.000Z
+
+Engine: Huorong
+Threats Found: [0;31;49mTEST/AVEngTestFile!EICAR[0m
+Scan Result: 1
+Time: 2018-04-17T09:39:00.000Z
+
+Engine: Hauri
+Threats Found: [0;31;49mEICAR-test[0m
+Scan Result: 1
+Time: 2018-04-19T00:00:00.000Z
+
+Engine: F-secure
+Threats Found: [0;31;49mEICAR_Test_File[0m
+Scan Result: 1
+Time: 2018-04-18T01:03:00.000Z
+
+Engine: F-prot
+Threats Found: [0;31;49mEICAR_Test_File[0m
+Scan Result: 1
+Time: 2018-04-18T01:06:00.000Z
+
+Engine: Fortinet
+Threats Found: [0;31;49mEICAR_TEST_FILE[0m
+Scan Result: 1
+Time: 2018-04-18T00:00:00.000Z
+
+Engine: Filseclab
+Threats Found: [0;31;49mEICAR.Test.File.zewa[0m
+Scan Result: 1
+Time: 2018-04-17T11:57:00.000Z
+
+Engine: ESET
+Threats Found: [0;31;49mEicar test file[0m
+Scan Result: 1
+Time: 2018-04-17T00:00:00.000Z
+
+Engine: Emsisoft
+Threats Found: [0;31;49mEICAR-Test-File (not a virus) (B)[0m
+Scan Result: 1
+Time: 2018-04-18T02:52:00.000Z
+
+Engine: Cyren
+Threats Found: [0;31;49mEICAR_Test_File[0m
+Scan Result: 1
+Time: 2018-04-18T22:10:00.000Z
+
+Engine: ClamAV
+Threats Found: [0;31;49mEicar-Test-Signature[0m
+Scan Result: 1
+Time: 2018-04-17T20:26:00.000Z
+
+Engine: ByteHero
+Threats Found: [0;32;49mClean[0m
+Scan Result: 0
+Time: 2018-04-17T00:00:00.000Z
+
+Engine: BitDefender
+Threats Found: [0;31;49mEICAR-Test-File (not a virus)[0m
+Scan Result: 1
+Time: 2018-04-17T21:34:00.000Z
+
+Engine: Avira
+Threats Found: [0;31;49mEicar-Test-Signature[0m
+Scan Result: 1
+Time: 2018-04-17T00:00:00.000Z
+
+Engine: AVG
+Threats Found: [0;31;49mEICAR_Test[0m
+Scan Result: 1
+Time: 2018-04-17T09:25:00.000Z
+
+Engine: Antiy
+Threats Found: [0;31;49mTestFile/Win32.EICAR[0m
+Scan Result: 1
+Time: 2018-04-18T04:35:00.000Z
+
+Engine: Ahnlab
+Threats Found: [0;31;49mEICAR_Test_File[0m
+Scan Result: 1
+Time: 2018-04-18T00:00:00.000Z
+
+Engine: Agnitum
+Threats Found: [0;31;49mEICAR_test_file[0m
+Scan Result: 1
+Time: 2018-04-16T08:59:00.000Z
+
+Engine: AegisLab
+Threats Found: [0;31;49mEICAR-AV-Test[0m
+Scan Result: 1
+Time: 2018-04-18T01:00:00.000Z
+
+Engine: Vir.IT ML
+Threats Found: [0;32;49mClean[0m
+Scan Result: 0
+Time: 2018-04-17T13:28:00.000Z
+
+Engine: Vir.IT eXplorer
+Threats Found: [0;31;49mEICAR-Test-File[0m
+Scan Result: 1
+Time: 2018-04-17T13:28:00.000Z
+
+Engine: Dr.Web Gateway
+Threats Found: [0;31;49mEICAR Test File (NOT a Virus!)[0m
+Scan Result: 1
+Time: 2018-04-19T00:11:00.000Z
+
+]0;alexandra@riptide-replicator: ~/code/file_sentry/spec[01;32malexandra@riptide-replicator[00m:[01;34m~/code/file_sentry/spec[00m$ exitfile_sentry fake_infected_ffile.mean [A]0;alexandra@riptide-replicator: ~/code/file_sentry/spec[01;32malexandra@riptide-replicator[00m:[01;34m~/code/file_sentry/spec[00m$ exit[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+exit
+
+Script done on 2018-04-18 18:05:15-0700
