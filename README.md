@@ -7,7 +7,7 @@ It displays results from each engine as well as a brief summary. FileSentry is p
 
 First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.5.0, and might not work with older versions of Ruby.
 
-If you do not have Ruby installed, follow the instructions on this blog post to install rbenv and Ruby 2.5.0:[Setup Ruby On Rails on Ubuntu 16.04 Xenial Xerus](https://gorails.com/setup/ubuntu/16.04).
+If you do not have Ruby installed, follow the instructions on this blog post to install rbenv and Ruby 2.5.0: [Setup Ruby On Rails on Ubuntu 16.04 Xenial Xerus](https://gorails.com/setup/ubuntu/16.04).
 
 Only install Ruby and rbenv as specified in the 'Installing Ruby' section. Don't
 forget to run
@@ -23,7 +23,7 @@ To install the gem, enter the following in your terminal of choice:
 You can also clone this repo if you want to tweak FileSentry. Read the development section for more info if that floats your boat.
 
 ## Usage
-If you do not have an OPSWAT account/API key, visit [portal.opswat.com](portal.opswat.com) to sign up. After creating an account, the "home" tab will display your OPSWAT API Key.
+If you do not have an OPSWAT account/API key, visit [portal.opswat.com](https://portal.opswat.com/) to sign up. After creating an account, the "home" tab will display your OPSWAT API Key.
 
 After installation, to scan a file for malware enter the following command:
 
@@ -34,7 +34,11 @@ If this is your first time running the application, you will be prompted to ente
 
 The RELATIVE_PATH_TO_FILE argument loads the specified file into FileSentry, relative to the current working directory. To enter a file name with spaces, use quotation marks or escape whitespace with a backslash.
 
-The HASH_DIGEST argument is optional. If the gem is ran without the HASH_DIGEST argument, FileSentry will default to MD5.
+The HASH_DIGEST argument is optional. If the gem is ran without the HASH_DIGEST argument, FileSentry will default to MD5. Options are MD5, SHA256, and SHA1.
+
+An example command to scan a readme in the current working directory using SHA256 is as follows:
+    
+    $ file_sentry readme.txt sha256
 
 You can change the API key at any time by running the gem without any command line arguments.
 
@@ -44,7 +48,7 @@ After checking out the repo, run `bin/setup` to install development dependencies
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/<github username>/file_sentry. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/f3mshep/file_sentry. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -52,4 +56,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the FileSentry project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/<github username>/file_sentry/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the FileSentry project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/f3mshep/file_sentry/blob/master/CODE_OF_CONDUCT.md).
