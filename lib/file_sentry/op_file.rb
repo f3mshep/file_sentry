@@ -38,6 +38,11 @@ class OPFile
 
   def check_file
     raise "Invalid file" if !File.file?(filepath)
+    raise "File size too large" if get_file_size > 140
+  end
+
+  def get_file_size
+    ('%.2f' % (File.size(filepath).to_f / 2**20)).to_i
   end
 
 end
