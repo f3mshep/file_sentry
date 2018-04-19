@@ -23,7 +23,7 @@ To install the gem, enter the following in your terminal of choice:
 You can also clone this repo if you want to tweak FileSentry. Read the development section for more info if that floats your boat.
 
 ## Usage
-If you do not have an OPSWAT account/API key, visit [portal.opswat.com](portal.opswat.com) to sign up. After creating an account, the "home" tab will display your OPSWAT API Key.
+If you do not have an OPSWAT account/API key, visit [portal.opswat.com](https://portal.opswat.com/) to sign up. After creating an account, the "home" tab will display your OPSWAT API Key.
 
 After installation, to scan a file for malware enter the following command:
 
