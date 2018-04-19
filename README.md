@@ -1,7 +1,9 @@
 # FileSentry
 
 FileSentry is a gem that scans a designated file for malware using a comprehensive suite of anti-malware engines.
-It displays results from each engine as well as a brief summary. FileSentry is powered by the OPSWAT Metadefender Cloud API. To use this gem, you will need to create an account with OPSWAT. Don't worry, it's free to sign up!
+It displays results from each engine as well as a brief summary. FileSentry is powered by the OPSWAT Metadefender Cloud API. To use this gem, you will need to create an account with OPSWAT. Don't worry, it's free to sign up! 
+
+Please keep in mind you are still bound by OPSWAT's terms and conditions when you use this gem. Specifially, don't use this gem for commercial purposes unless you have a paid license through OPSWAT.
 
 ## Installation
 
