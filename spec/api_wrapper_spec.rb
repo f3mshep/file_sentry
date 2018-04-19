@@ -10,8 +10,8 @@ describe APIWrapper do
     @file_hash = FileHash.new({op_file: @op_file})
     @api_wrapper = APIWrapper.new({op_file: @op_file})
     @file_hash.hash_file("md5")
-    # API output
 
+    # API output
     #GET data_id
     data_id_response = {"file_id"=>"dDE4MDQxN0JKdHNNbTNRaHo",
     "data_id"=>"dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6",
@@ -163,13 +163,21 @@ describe APIWrapper do
 
   describe "#get_data_id" do
     it "makes a GET request to the appropriate OPSWAT endpoint" do
+      @op_file.data_id= "dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6"
       @api_wrapper.send(:get_data_id)
       expect(WebMock).to have_requested(
         :get,
-
-      )
+        "https://api.metadefender.com/v2/file/dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6"
+      ).
+      with(
+        headers: {
+          'Apikey'=>'9c2b11386f6d45999252d497855a3b0b'
+        })
     end
     it "returns a hash containing the response body" do
+      @op_file.data_id= "dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6"
+      response = @api_wrapper.send(:get_data_id)
+      expect(response["data_id"]).to eq("dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6")
     end
   end
 
