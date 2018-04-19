@@ -12,7 +12,6 @@ class CommandLine
     op_file.filepath = filepath
     if filepath
       analyze_file
-      exit
     else
       show_usage
       show_config
@@ -22,18 +21,36 @@ class CommandLine
 
   private
 
+  def print_result
+    raise "Scan not completed" if op_file.scan_results.nil?
+    status = op_file.scan_results["scan_all_result_a"]
+    status == "No threat detected" ? status = status.colorize(:green) : status = status.colorize(:red)
+    puts "\n" * 10
+    puts "Filename: #{File.basename(op_file.filepath)}"
+    puts "Overall Status: " + status
+    puts "\n"
+    op_file.scan_results["scan_details"].each do |engine_arr|
+      engine = engine_arr[1]
+      threats_found = engine["threat_found"].colorize(:red)
+      puts "Engine: #{engine_arr[0]}"
+      puts "Threats Found: #{threats_found.empty? ? "Clean".colorize(:green) : threats_found}"
+      puts "Scan Result: #{engine["scan_result_i"]}"
+      puts "Time: #{engine["def_time"]}"
+      puts "\n"
+    end
+  end
+
   def analyze_file
     encrypt = encryption || "md5"
     print "Analyzing File... "
     show_wait_spinner { op_file.process_file(encrypt) }
-    op_file.print_result
+    print_result
   end
 
   def show_config
     puts "press 'y' to change API Key, or any other key to exit"
     input = STDIN.gets.chomp
     get_key_from_user if input.downcase == 'y'
-    exit
   end
 
   def show_usage
@@ -49,10 +66,13 @@ class CommandLine
   end
 
   def load_api_key
-    begin
-      key = File.read("#{Dir.home}/.file_sentry")
-    rescue
-      key = get_key_from_user
+    key = FileSentry.configuration.access_key
+    if key.nil?
+      begin
+        key = File.read("#{Dir.home}/.file_sentry")
+      rescue
+        key = get_key_from_user
+      end
     end
     key
   end
