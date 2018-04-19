@@ -9,14 +9,7 @@ Please keep in mind you are still bound by OPSWAT's terms and conditions when yo
 
 First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.5.0, and might not work with older versions of Ruby.
 
-If you do not have Ruby installed, follow the instructions on this blog post to install rbenv and Ruby 2.5.0: [Setup Ruby On Rails on Ubuntu 16.04 Xenial Xerus](https://gorails.com/setup/ubuntu/16.04).
-
-Only install Ruby and rbenv as specified in the 'Installing Ruby' section. Don't
-forget to run
-
-    $ rbenv rehash
-
- after installing bundler!
+If you do not have Ruby installed, you can find detailed instructions on my blog: [How to Install Ruby with rbenv](http://alexandrawright.net/posts/how_to_install_ruby_with_rbenv).
 
 To install the gem, enter the following in your terminal of choice:
 
