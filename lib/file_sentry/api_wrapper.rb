@@ -26,9 +26,12 @@ class APIWrapper
 
   def monitor_scan
     response = get_data_id
+    seconds = 0
     until is_scan_complete?(response)
-      sleep(0.1)
+      sleep(1)
       response = get_data_id
+      timeout += 1
+      raise "Error: API timeout" if timeout > 120
     end
     op_file.scan_results = response["scan_results"]
   end
@@ -85,7 +88,7 @@ class APIWrapper
 
   def find_progress(response)
     begin
-      progress = response["process_info"]["progress_percentage"]
+      progress = response["scan_results"]["progress_percentage"]
     rescue
       progress = response["scan_results"]["scan_details"]["progress_percentage"]
     end
