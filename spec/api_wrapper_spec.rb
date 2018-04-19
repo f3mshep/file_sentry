@@ -1,5 +1,7 @@
 require 'spec_helper'
 require 'webmock/rspec'
+require 'dotenv'
+Dotenv.load('.env')
 
 BAD_API_KEY = "BAD API KEY"
 BAD_HASH = "IAMNOTREAL"
@@ -111,7 +113,7 @@ describe APIWrapper do
     # GET hash stub (hash exists)
     stub_request(:get, "https://api.metadefender.com/v2/hash/3A93D4CCEF8CFDE41DF8F543852B4A43").
       with(  headers: {
-      'Apikey'=>'9c2b11386f6d45999252d497855a3b0b'
+      'Apikey'=> ENV["OPSWAT_KEY"]
       }).
       to_return(
         status: [200, "OK"],
@@ -120,7 +122,7 @@ describe APIWrapper do
     # GET hash stub (hash does not exist)
     stub_request(:get, "https://api.metadefender.com/v2/hash/#{BAD_HASH}").
       with(  headers: {
-      'Apikey'=>'9c2b11386f6d45999252d497855a3b0b'
+      'Apikey'=> ENV["OPSWAT_KEY"]
       }).
       to_return(
         status: [200, "OK"],
@@ -138,13 +140,13 @@ describe APIWrapper do
     # GET data_id
     stub_request(:get, "https://api.metadefender.com/v2/file/dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6").
       with(  headers: {
-      'Apikey'=>'9c2b11386f6d45999252d497855a3b0b'
+      'Apikey'=> ENV["OPSWAT_KEY"]
       }).
       to_return(status: [200, "OK"], body: JSON.generate(data_id_response), headers: {content_type: 'application/json'})
     # POST file
     stub_request(:post, "https://api.metadefender.com/v2/file/").
       with(  headers: {
-      'Apikey'=>'9c2b11386f6d45999252d497855a3b0b'
+      'Apikey'=> ENV["OPSWAT_KEY"]
       },
       body: {"filename" => File.open(@op_file.filepath)}
       ).
@@ -171,7 +173,7 @@ describe APIWrapper do
       ).
       with(
         headers: {
-          'Apikey'=>'9c2b11386f6d45999252d497855a3b0b'
+          'Apikey'=> ENV["OPSWAT_KEY"]
         })
     end
     it "returns a hash containing the response body" do
