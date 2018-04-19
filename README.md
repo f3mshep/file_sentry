@@ -34,7 +34,11 @@ If this is your first time running the application, you will be prompted to ente
 
 The RELATIVE_PATH_TO_FILE argument loads the specified file into FileSentry, relative to the current working directory. To enter a file name with spaces, use quotation marks or escape whitespace with a backslash.
 
-The HASH_DIGEST argument is optional. If the gem is ran without the HASH_DIGEST argument, FileSentry will default to MD5.
+The HASH_DIGEST argument is optional. If the gem is ran without the HASH_DIGEST argument, FileSentry will default to MD5. Options are MD5, SHA256, and SHA1.
+
+An example command to scan a readme in the current working directory using SHA256 is as follows:
+    
+    $ file_sentry readme.txt sha256
 
 You can change the API key at any time by running the gem without any command line arguments.
 
