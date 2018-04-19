@@ -39,7 +39,7 @@ You can change the API key at any time by running the gem without any command li
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install development dependencies. Then, run `rspec` to run the tests.
+After checking out the repo, run `bin/setup` to install development dependencies. Then, run `rspec` to run the tests. To install a local version of the gem, you can run `rake install`.
 
 ## Contributing
 
