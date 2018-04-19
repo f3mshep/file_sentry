@@ -7,7 +7,7 @@ It displays results from each engine as well as a brief summary. FileSentry is p
 
 First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.5.0, and might not work with older versions of Ruby.
 
-If you do not have Ruby installed, follow the instructions on this blog post to install rbenv and Ruby 2.5.0:[Setup Ruby On Rails on Ubuntu 16.04 Xenial Xerus](https://gorails.com/setup/ubuntu/16.04).
+If you do not have Ruby installed, follow the instructions on this blog post to install rbenv and Ruby 2.5.0: [Setup Ruby On Rails on Ubuntu 16.04 Xenial Xerus](https://gorails.com/setup/ubuntu/16.04).
 
 Only install Ruby and rbenv as specified in the 'Installing Ruby' section. Don't
 forget to run
