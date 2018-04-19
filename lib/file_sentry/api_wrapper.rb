@@ -30,8 +30,8 @@ class APIWrapper
     until is_scan_complete?(response)
       sleep(1)
       response = get_data_id
-      timeout += 1
-      raise "Error: API timeout" if timeout > 120
+      seconds += 1
+      raise "Error: API timeout" if seconds > 120
     end
     op_file.scan_results = response["scan_results"]
   end
