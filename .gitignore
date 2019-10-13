@@ -10,5 +10,11 @@
 # rspec failure tracking
 .rspec_status
 
-#Hide env
-.env
+/Gemfile.lock
+/.ruby-version
+*.gem
+/vendor/bundle
+
+# Misc.
+.DS_Store
+/.idea/
