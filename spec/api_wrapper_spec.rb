@@ -1,10 +1,10 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'webmock/rspec'
-require 'dotenv'
-Dotenv.load('.env')
 
-BAD_API_KEY = "BAD API KEY"
-BAD_HASH = "IAMNOTREAL"
+BAD_API_KEY = 'BAD API KEY'
+BAD_HASH = 'IAMNOTREAL'
 
 describe APIWrapper do
   before :each do
@@ -226,5 +226,3 @@ describe APIWrapper do
     end
   end
 end
-
-
