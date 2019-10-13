@@ -7,7 +7,7 @@ Please keep in mind you are still bound by OPSWAT's terms and conditions when yo
 
 ## Installation
 
-First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.5.0, and might not work with older versions of Ruby.
+First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.3.0, and might not work with older versions of Ruby.
 If you do not have Ruby installed, you can find detailed instructions on my blog: [How to Install Ruby with rbenv](http://alexandrawright.net/posts/how_to_install_ruby_with_rbenv).
 
 To install the gem, enter the following in your terminal of choice:

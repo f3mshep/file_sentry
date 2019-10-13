@@ -1,0 +1,14 @@
+AllCops:
+  TargetRubyVersion: 2.3
+
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Style/ExpandPathArguments:
+  Enabled: false
