@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require 'rainbow/ext/string'
+
 class CommandLine
   attr_accessor :filepath, :encryption, :op_file
 
@@ -18,31 +22,32 @@ class CommandLine
     end
   end
 
-
   private
 
   def print_result
-    raise "Scan not completed" if op_file.scan_results.nil?
-    status = op_file.scan_results["scan_all_result_a"]
-    status == "No threat detected" ? status = status.colorize(:green) : status = status.colorize(:red)
+    raise 'Scan not completed.' unless op_file.scan_results
+
+    status = op_file.scan_results['scan_all_result_a']
     puts "\n" * 10
-    puts "Filename: #{File.basename(op_file.filepath)}"
-    puts "Overall Status: " + status
-    puts "\n"
-    op_file.scan_results["scan_details"].each do |engine_arr|
-      engine = engine_arr[1]
-      threats_found = engine["threat_found"].colorize(:red)
-      puts "Engine: #{engine_arr[0]}"
-      puts "Threats Found: #{threats_found.empty? ? "Clean".colorize(:green) : threats_found}"
-      puts "Scan Result: #{engine["scan_result_i"]}"
-      puts "Time: #{engine["def_time"]}"
-      puts "\n"
+
+    puts 'Filename: ' + File.basename(op_file.filepath)
+    puts 'Overall Status: ' + (status =~ /\bNo\s*Threats?\b/i ? status.green : status.red)
+    puts
+
+    op_file.scan_results['scan_details'].each do |engine, result|
+      threats_found = result['threat_found'].to_s
+
+      puts "Engine: #{engine}"
+      puts 'Threats Found: ' + (threats_found.empty? ? 'Clean'.green : threats_found.red)
+      puts "Scan Result: #{result['scan_result_i']}"
+      puts "Time: #{result['def_time']}"
+      puts
     end
   end
 
   def analyze_file
-    encrypt = encryption || "md5"
-    print "Analyzing File... "
+    encrypt = encryption || 'md5'
+    print 'Analyzing File... '
     show_wait_spinner { op_file.process_file(encrypt) }
     print_result
   end
@@ -54,9 +59,9 @@ class CommandLine
   end
 
   def show_usage
-    puts "Usage: file_sentry filepath encryption"
-    puts "encryption is an optional argument"
-    puts "\n"
+    puts 'Usage: file_sentry filepath encryption'
+    puts 'encryption is an optional argument'
+    puts
   end
 
   def config_app(key)
@@ -78,7 +83,7 @@ class CommandLine
   end
 
   def get_key_from_user
-    puts "Please enter OPSWAT MetaDefender API Key: "
+    puts 'Please enter OPSWAT MetaDefender API Key: '
     key = STDIN.gets.chomp
     save_key(key)
     key
@@ -86,36 +91,35 @@ class CommandLine
 
   def save_key(key)
     begin
-      file = File.open("#{Dir.home}/.file_sentry", 'w')
-      file.write(key)
-      puts "API Key saved"
+      File.write("#{Dir.home}/.file_sentry", key)
+      puts 'API Key saved'
     rescue
-      warn("Could not save API configuration file".colorize(:yellow))
-    ensure
-      file.close unless file.nil?
+      warn 'Could not save API configuration file'.yellow
     end
     key
   end
 
-
-  def show_wait_spinner(fps=10)
-    # courtesy of Phrogz
-    # https://stackoverflow.com/questions/10262235/printing-an-ascii-spinning-cursor-in-the-console
-
-    chars = %w[⣾ ⣷ ⣯ ⣟ ⡿ ⢿ ⣻ ⣽].map {|symbol|symbol.colorize(:light_blue)}
-    delay = 1.0/fps
+  # https://stackoverflow.com/questions/10262235/printing-an-ascii-spinning-cursor-in-the-console
+  def show_wait_spinner(fps = 10)
+    chars = %w[⣾ ⣷ ⣯ ⣟ ⡿ ⢿ ⣻ ⣽].map(&:lightblue).freeze
+    delay = 1.0 / fps
     iter = 0
+
     spinner = Thread.new do
-      while iter do  # Keep spinning until told otherwise
-        print chars[(iter+=1) % chars.length]
+      # Keep spinning until told otherwise
+      while iter
+        print chars[(iter += 1) % chars.length]
         sleep delay
         print "\b"
       end
     end
-    yield.tap{       # After yielding to the block, save the return value
-      iter = false   # Tell the thread to exit, cleaning up after itself…
-      spinner.join   # …and wait for it to do so.
-    }                # Use the block's return value as the method's
-  end
 
+    # After yielding to the block, save the return value
+    # Tell the thread to exit, cleaning up after itself and wait for it to do so.
+    # Use the block's return value as the method's
+    yield.tap do
+      iter = false
+      spinner.join
+    end
+  end
 end
