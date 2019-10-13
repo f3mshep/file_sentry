@@ -1,34 +1,41 @@
-class FileHash
+# frozen_string_literal: true
 
+require 'digest'
+
+class FileHash
+  # @return [OpFile]
   attr_accessor :op_file
 
-  def initialize(attributes)
-    attributes.each {|attribute, value| self.send("#{attribute}=", value)}
+  # @param [OpFile] op_file
+  def initialize(op_file:)
+    self.op_file = op_file
   end
 
+  # @param [Object] encryption
+  # @return [String] The file hashed as a hex-string
+  # @raise [NotImplementedError] If encryption is not supported
   def hash_file(encryption)
-    begin
-      self.send("digest_#{encryption.downcase}")
-    rescue
-      raise "No encryption found for: #{encryption}"
-    end
+    digest = get_digest(encryption).file op_file.filepath
+    op_file.hash = digest.hexdigest.upcase
   end
 
   private
 
-  def digest_md5
-    digest = Digest::MD5.file op_file.filepath
-    op_file.hash = digest.hexdigest.upcase
+  # @param [Object] encryption
+  # @return [Digest::Instance]
+  # @raise [NotImplementedError] If encryption is not supported
+  def get_digest(encryption)
+    case encryption.to_s.strip.upcase
+    when 'MD5'
+      Digest::MD5
+    when 'SHA1'
+      Digest::SHA1
+    when 'SHA256'
+      # noinspection RubyResolve
+      Digest::SHA256
+    else
+      # No encryption found for: encryption
+      raise NotImplementedError, "Unsupported encryption: #{encryption}"
+    end
   end
-
-  def digest_sha1
-    digest = Digest::SHA1.file op_file.filepath
-    op_file.hash = digest.hexdigest.upcase
-  end
-
-  def digest_sha256
-    digest = Digest::SHA256.file op_file.filepath
-    op_file.hash = digest.hexdigest.upcase
-  end
-
 end

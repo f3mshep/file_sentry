@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'file_sentry/command_line'
 
-describe CommandLine do
+RSpec.describe CommandLine do
   before :each do
     @cmd = CommandLine.new filepath: File.expand_path('../test_file.txt', __FILE__)
   end

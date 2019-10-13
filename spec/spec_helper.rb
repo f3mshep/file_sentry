@@ -2,21 +2,22 @@
 
 require 'bundler/setup'
 require 'file_sentry'
-require_relative '../config/environment.rb'
 
 RSpec.configure do |config|
-  # Use color in STDOUT
-  config.color = true
+  # Enable flags like --only-failures and --next-failure
+  config.example_status_persistence_file_path = '.rspec_status'
 
-  # Use color not only in STDOUT but also in pagers and files
-  config.tty = true
+  # Disable RSpec exposing methods globally on `Module` and `main`
+  config.disable_monkey_patching!
 
-  # Use the specified formatter
-  config.formatter = :documentation # :progress, :html,
-                                    # :json, CustomFormatterClass
-  config.before(:all) do
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+
+  config.before :all do
     FileSentry.configure do |cfg|
       cfg.access_key = ENV['OPSWAT_KEY']
+      cfg.is_debug = true
     end
   end
 end
