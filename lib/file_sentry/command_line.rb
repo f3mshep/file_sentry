@@ -7,17 +7,23 @@ module FileSentry
   # @attr [String] filepath
   # @attr [Hash] options
   # @attr [OpFile] op_file
-  class CommandLine
+  class CommandLine # rubocop:disable Metrics/ClassLength
     attr_accessor :filepath, :options, :op_file
 
+    # @param [Array] args
     # @param [String] filepath
     # @param [Hash] options
     # @option options [String] :encryption
     # @option options [Boolean] :sanitize Clean malicious after scanning?
     # @option options [Boolean] :archive  Support scanning archive contents
     # @option options [String] :password  For password-protected archive
+    # @option options [String] :key       API key
+    # @option options [Integer] :limit    File size limit in MB
+    # @option options [Integer] :timeout  Scanning timeout in seconds
+    # @option options [Boolean] :debug
     # @param [OpFile] op_file
-    def initialize(filepath: nil, options: nil, op_file: nil)
+    def initialize(args = nil, filepath: nil, options: nil, op_file: nil)
+      @args = args
       self.filepath = filepath
       self.options = options
       self.op_file = op_file || OpFile.new(filepath: filepath)
@@ -29,23 +35,25 @@ module FileSentry
     # @raise [TypeError] If invalid API response
     # @raise [HTTParty::ResponseError] If API response status is not OK
     def start_utility
-      key = load_api_key
-      config_app key
+      parse_arguments @args
+
+      options[:key] = load_api_key
+      config_app options
 
       op_file.filepath ||= filepath
       if op_file.filepath
         analyze_file
       else
-        show_usage
-        show_config
+        # show usage
+        puts opt_parser
       end
     end
 
     private
 
-    # @param [Hash] results Scan results
     # @raise [RuntimeError] If scanning is not completed
-    def print_result(results = op_file.scan_results)
+    def print_result
+      results = op_file.scan_results
       raise 'Scan not completed.' unless results
 
       puts
@@ -116,23 +124,70 @@ module FileSentry
       )
     end
 
-    def show_config
-      puts 'press "y" to change API Key, or any other key to exit'
-      input = $stdin.gets.chomp
-      input_api_key if input.downcase == 'y'
+    # @return [OptionParser]
+    def opt_parser
+      @opt_parser ||= OptionParser.new do |opts|
+        opts.banner = 'Usage: file_sentry [options] filepath'
+        opts.separator '  Scan a file for malware with OPSWAT MetaDefender Cloud API'
+        opts.separator 'Options:'
+
+        init_parser_params opts
+
+        opts.separator nil
+        init_parser_options opts
+      end
     end
 
-    def show_usage
-      puts 'Usage: file_sentry filepath encryption'
-      puts 'encryption is an optional argument'
-      puts
+    # @param [OptionParser] opts
+    def init_parser_params(opts)
+      opts.on('--file filepath', 'Relative path to file for scanning')
+      opts.on('-e', '--encryption [MD5]', 'Hash digest for the file (md5 sha1 sha256)')
+
+      opts.on('-s', '--[no-]sanitize', 'Clean malicious after scanning')
+      opts.on('-a', '--[no-]archive', 'Support scanning archive contents')
+      opts.on('-p', '--password [ARCHIVE_PWD]', 'For password-protected archive')
     end
 
-    # @param [String] key
-    def config_app(key)
+    # @param [OptionParser] opts
+    def init_parser_options(opts)
+      opts.on('-k', '--key [API_KEY]', 'API key')
+      opts.on('-l', '--limit [140]', Integer, 'File size limit in MB')
+      opts.on('-t', '--timeout [120]', Integer, 'Scanning timeout in seconds')
+
+      opts.separator nil
+      opts.on('-d', '--[no-]debug', 'Run verbosely')
+      opts.on('-h', '--help', 'Prints this help') do
+        puts opts
+        exit
+      end
+    end
+
+    # @param [Array] args
+    def parse_arguments(args)
+      opts = {}
+      rest = opt_parser.parse!(args, into: opts) if args
+      opts[:file] = rest.first if rest && !rest.empty?
+
+      self.options ||= opts
+      self.filepath ||= options.delete :file
+    rescue RuntimeError => e
+      warn e # .to_s.color(:white)
+      puts opt_parser
+      exit
+    end
+
+    # @param [Hash] opts
+    # @option opts [String] :key      API key
+    # @option opts [Integer] :limit   File size limit in MB
+    # @option opts [Integer] :timeout Scanning timeout in seconds
+    # @option opts [Boolean] :debug
+    def config_app(opts)
       FileSentry.configure do |config|
-        config.access_key = key
+        config.access_key = opts[:key]
+        config.max_file_size = opts[:limit] if opts.key?(:limit)
+        config.scan_timeout = opts[:timeout] if opts.key?(:timeout)
 
+        config.is_debug = opts[:debug]
         ApiWrapper.configure config
       end
     end
@@ -143,13 +198,15 @@ module FileSentry
     end
 
     def load_api_key
-      key = FileSentry.configuration.access_key
-      return key if key
+      key = options[:key]
 
-      has_config = File.size?(config_file)
-      key = File.read(config_file) if has_config
+      if key
+        save_key key
+      else
+        key = File.read(config_file) if File.size?(config_file)
+        key = input_api_key if !key || key.empty?
+      end
 
-      key = input_api_key if !key || key.empty?
       key
     end
 

@@ -22,17 +22,17 @@ If you do not have an OPSWAT account/API key, visit [portal.opswat.com](https://
 
 After installation, to scan a file for malware enter the following command:
 
-    $ file_sentry RELATIVE_PATH_TO_FILE (Optional)HASH_DIGEST
+    $ file_sentry [OPTIONS] RELATIVE_PATH_TO_FILE
 
 If this is your first time running the application, you will be prompted to enter your API key.
 
 The RELATIVE_PATH_TO_FILE argument loads the specified file into FileSentry, relative to the current working directory. To enter a file name with spaces, use quotation marks or escape whitespace with a backslash.
 
-The HASH_DIGEST argument is optional. If the gem is ran without the HASH_DIGEST argument, FileSentry will default to MD5. Options are MD5, SHA256, and SHA1.
+Run the command-line without arguments or with `-h` switch to list all optional options (e.g. HASH_DIGEST, API_KEY,...).
 
-An example command to scan a readme in the current working directory using SHA256 is as follows:
+An example command to scan/clean `README.md` file in the current working directory using `SHA256` digest is as follows:
 
-    $ file_sentry readme.txt sha256
+    $ file_sentry -e sha256 -s README.md
 
 You can change the API key at any time by running the gem without any command line arguments.
 

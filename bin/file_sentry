@@ -6,5 +6,4 @@ $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 require 'file_sentry'
 require 'file_sentry/command_line'
 
-op = FileSentry::CommandLine.new(filepath: ARGV[0], options: { encryption: ARGV[1] })
-op.start_utility
+FileSentry::CommandLine.new(ARGV).start_utility
