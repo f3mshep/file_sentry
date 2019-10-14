@@ -19,21 +19,28 @@ module FileSentry
       self.api_wrapper = api_wrapper || ApiWrapper.new(op_file: self)
     end
 
-    # @param [String] encrypt
+    # @param [String] encrypt   Digest encryption
+    # @param [Boolean] sanitize Clean malicious after scanning?
+    # @param [Boolean] unarchive
+    # @param [String] archive_pwd For password-protected archive
     # @return [Hash] Scan results
-    def process_file(encrypt)
+    # @raise [ArgumentError] If the file not found or it's size is reached the maximum limit
+    # @raise [NameError] If digest encryption is not supported
+    # @raise [RuntimeError] If scanning timeout or no hash/data_id set during runtime
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def process_file(encrypt, sanitize: false, unarchive: true, archive_pwd: nil)
       check_file
       file_hash.hash_file encrypt
-      api_wrapper.scan_file
+      api_wrapper.scan_file sanitize, unarchive, archive_pwd
     end
 
     private
 
-    # @raise [IOError] If the filepath is invalid
-    # @raise [RangeError] If the file-size is reached the maximum limit
+    # @raise [ArgumentError] If the file not found or it's size is reached the maximum limit
     def check_file
-      raise IOError, 'Invalid file.' unless File.file?(filepath)
-      raise RangeError, 'File size is too large.' if file_size_limit > 0.0 && file_size_mb > file_size_limit
+      raise ArgumentError, 'Invalid file.' unless File.file?(filepath)
+      raise ArgumentError, 'File size is too large.' if file_size_limit > 0.0 && file_size_mb > file_size_limit
     end
 
     # @return [Float]

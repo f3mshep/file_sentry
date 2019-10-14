@@ -24,7 +24,7 @@ module FileSentry
       it 'raise error for unsupported encryption' do
         expect(@file_hash).to be_kind_of(described_class)
 
-        expect { @file_hash.hash_file('SHA') }.to raise_error(NotImplementedError, /\bUnsupported\b/i)
+        expect { @file_hash.hash_file('SHA') }.to raise_error(NameError, /\bUnsupported\b/i)
       end
     end
   end

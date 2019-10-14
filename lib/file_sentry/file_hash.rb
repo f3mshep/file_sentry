@@ -14,7 +14,7 @@ module FileSentry
 
     # @param [Object] encryption
     # @return [String] The file hashed as a hex-string
-    # @raise [NotImplementedError] If encryption is not supported
+    # @raise [NameError] If encryption is not supported
     def hash_file(encryption)
       digest = get_digest(encryption).file op_file.filepath
       op_file.hash = digest.hexdigest.upcase
@@ -24,7 +24,7 @@ module FileSentry
 
     # @param [Object] encryption
     # @return [Digest::Instance]
-    # @raise [NotImplementedError] If encryption is not supported
+    # @raise [NameError] If encryption is not supported
     def get_digest(encryption)
       case encryption.to_s.strip.upcase
       when 'MD5'
@@ -36,7 +36,7 @@ module FileSentry
         Digest::SHA256
       else
         # No encryption found for: encryption
-        raise NotImplementedError, "Unsupported encryption: #{encryption}"
+        raise NameError, "Unsupported encryption: #{encryption}"
       end
     end
   end

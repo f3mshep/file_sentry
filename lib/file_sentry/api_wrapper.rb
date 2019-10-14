@@ -30,10 +30,16 @@ module FileSentry
       end
     end
 
+    # @param [Boolean] sanitize Clean malicious after scanning?
+    # @param [Boolean] unarchive
+    # @param [String] archive_pwd For password-protected archive
     # @return [Hash] Scan results
-    def scan_file
-      response = report_by_hash [200, 404]
-      response = post_file unless does_hash_exist?(response, op_file.hash)
+    # @raise [RuntimeError] If scanning timeout or no hash/data_id set during runtime
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def scan_file(sanitize = false, unarchive = true, archive_pwd = nil)
+      response = report_by_hash
+      response = upload_file(sanitize, unarchive, archive_pwd) unless does_hash_exist?(response, op_file.hash)
       save_data_id response
 
       monitor_scan
@@ -42,7 +48,9 @@ module FileSentry
     private
 
     # @return [Hash] Scan results
-    # @raise [ThreadError] If scanning timeout
+    # @raise [RuntimeError] If scanning timeout or no data_id set during runtime
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
     def monitor_scan
       (FileSentry.configuration.scan_timeout || 3600).times do
         sleep(1)
@@ -51,28 +59,47 @@ module FileSentry
         return op_file.scan_results = response['scan_results'] if scan_complete?(response)
       end
 
-      raise ThreadError, 'Error: API timeout.'
+      raise 'Error: API timeout.'
     end
 
-    def post_file
-      response = self.class.post('/file/', body: { filename: File.open(op_file.filepath, 'rb') })
+    # @param [Boolean] sanitize Clean malicious after scanning?
+    # @param [Boolean] unarchive
+    # @param [String] archive_pwd For password-protected archive
+    # @return [Hash] Uploading status
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def upload_file(sanitize = false, unarchive = true, archive_pwd = nil)
+      rules = []
+      rules << 'sanitize' if sanitize
+      rules << 'unarchive' if unarchive || archive_pwd
+
+      api_headers = {}
+      api_headers['rule'] = rules.join(',') unless rules.empty?
+      api_headers['archivepwd'] = archive_pwd if archive_pwd
+
+      response = self.class.post '/file/', headers: api_headers, body_stream: File.open(op_file.filepath, 'rb')
       error_check(response)
     end
 
-    # @param [Array<Integer>] ok_on
-    # @raise [ArgumentError] If file hash was not set
-    def report_by_hash(ok_on = nil)
-      raise ArgumentError, 'No hash set.' unless op_file.hash
+    # @return [Hash] Scan reports
+    # @raise [RuntimeError] If file hash was not set
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def report_by_hash
+      raise 'No hash set.' unless op_file.hash
 
-      response = self.class.get('/hash/' + op_file.hash)
-      error_check(response, ok_on)
+      response = self.class.get '/hash/' + op_file.hash
+      error_check(response, [200, 404])
     end
 
-    # @raise [ArgumentError] If data_id was not set
+    # @return [Hash] Scan reports
+    # @raise [RuntimeError] If data_id was not set
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
     def report_by_data_id
-      raise ArgumentError, 'No data_id set.' unless op_file.data_id
+      raise 'No data_id set.' unless op_file.data_id
 
-      response = self.class.get('/file/' + op_file.data_id)
+      response = self.class.get '/file/' + op_file.data_id
       error_check(response)
     end
 
@@ -93,14 +120,17 @@ module FileSentry
     # @param [HTTParty::Response] response
     # @param [Array<Integer>] ok_on
     # @return [Hash] Parsed response
-    # @raise [TypeError] If response is invalid
-    # @raise [RuntimeError] If response status is not OK
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
     def error_check(response, ok_on = nil)
       raise TypeError, 'Error: No response.' unless response
 
       ok_on = [200] if !ok_on || ok_on.empty?
       data = response.parsed_response
-      raise "Error: #{find_err_message(response, data)}" unless ok_on.include?(response.code)
+
+      unless ok_on.include?(response.code)
+        raise HTTParty::ResponseError.new(response.response), "Error: #{find_err_message(response, data)}"
+      end
 
       data
     end
