@@ -7,13 +7,13 @@ module FileSentry
   MOCK_HASH = '3A93D4CCEF8CFDE41DF8F543852B4A43'
   MOCK_DATA_ID = 'dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6'
 
-  API_HEADERS = { 'apikey' => ENV['OPSWAT_KEY'] }.freeze
+  API_HEADERS = { apikey: ENV['OPSWAT_KEY'] }.freeze
   JSON_HEADERS = { content_type: 'application/json' }.freeze
 
   # API output
   JSON_SCAN_REPORTS = File.read File.expand_path('../data/test_file_scan_reports.json', __FILE__)
 
-  RSpec.describe ApiWrapper do
+  RSpec.describe ApiWrapper do # rubocop:disable Metrics/BlockLength
     BASE_URL = described_class.base_uri
 
     before :each do
@@ -38,7 +38,7 @@ module FileSentry
 
       # Invalid API
       stub_request(:get, "#{BASE_URL}/hash/#{MOCK_HASH}")
-        .with(headers: { 'apikey' => BAD_API_KEY })
+        .with(headers: { apikey: BAD_API_KEY })
         .to_return(status: [401, 'Invalid Apikey'], body: '{}', headers: JSON_HEADERS)
 
       # GET data_id
@@ -52,7 +52,7 @@ module FileSentry
           headers: API_HEADERS.merge('content-type' => 'application/octet-stream'),
           body: File.read(@op_file.filepath, mode: 'rb')
         )
-        .to_return(status: [200, 'OK'], body: JSON.generate(data_id: MOCK_DATA_ID), headers: JSON_HEADERS)
+        .to_return(status: [200, 'OK'], body: '{"data_id":"' + MOCK_DATA_ID + '"}', headers: JSON_HEADERS)
     end
 
     describe '.new' do

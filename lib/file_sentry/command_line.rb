@@ -165,7 +165,7 @@ module FileSentry
     # @param [Array] args
     def parse_arguments(args)
       opts = {}
-      rest = opt_parser.parse!(args, into: opts) if args
+      rest = args ? opt_parser.parse!(args, into: opts) : nil
       opts[:file] = rest.first if rest && !rest.empty?
 
       self.options ||= opts
@@ -197,6 +197,7 @@ module FileSentry
       @config_file ||= File.join(Dir.home, '.file_sentry')
     end
 
+    # @return [String]
     def load_api_key
       key = options[:key]
 
@@ -240,6 +241,7 @@ module FileSentry
       # Tell the thread to exit, cleaning up after itself and wait for it to do so.
       # Use the block's return value as the method's
       yield.tap do
+        # noinspection RubyUnusedLocalVariable
         loop = false
         spinner.join
       end
@@ -249,7 +251,7 @@ module FileSentry
     # @return [String]
     def spin_chars(index = nil)
       @spin_chars ||= %w[┤ ┘ ┴ └ ├ ┌ ┬ ┐].map { |s| s.color(:cyan) }.freeze
-      !index ? @spin_chars : @spin_chars[index % @spin_chars.length]
+      index ? @spin_chars[index % @spin_chars.length] : @spin_chars
     end
   end
 end
