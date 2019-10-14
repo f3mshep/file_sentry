@@ -9,7 +9,7 @@ module FileSentry
 
   RSpec.describe FileHash do
     before :each do
-      @op_file = OpFile.new filepath: File.expand_path('../test_file.txt', __FILE__)
+      @op_file = OpFile.new filepath: File.expand_path('../data/test_file.txt', __FILE__)
       @file_hash = @op_file.file_hash
     end
 

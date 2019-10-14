@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'file_sentry/command_line'
-
 module FileSentry
   RSpec.describe CommandLine do
     before :each do
-      @cmd = described_class.new filepath: File.expand_path('../test_file.txt', __FILE__)
+      @cmd = described_class.new filepath: File.expand_path('../data/test_file.txt', __FILE__)
     end
 
     # properly printing the result is mission critical

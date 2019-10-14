@@ -42,24 +42,27 @@ module FileSentry
       response = upload_file(sanitize, unarchive, archive_pwd) unless does_hash_exist?(response, op_file.hash)
       save_data_id response
 
-      monitor_scan
+      monitor_scan response
     end
 
     private
 
+    # @param [Hash] response Scanning status
     # @return [Hash] Scan results
     # @raise [RuntimeError] If scanning timeout or no data_id set during runtime
     # @raise [TypeError] If invalid API response
     # @raise [HTTParty::ResponseError] If API response status is not OK
-    def monitor_scan
-      (FileSentry.configuration.scan_timeout || 3600).times do
+    def monitor_scan(response = {})
+      seconds = FileSentry.configuration.scan_timeout
+
+      until scan_complete?(response)
+        raise 'Error: API timeout.' if seconds && (seconds -= 1).negative?
+
         sleep(1)
         response = report_by_data_id
-
-        return op_file.scan_results = response['scan_results'] if scan_complete?(response)
       end
 
-      raise 'Error: API timeout.'
+      op_file.scan_results = response['scan_results']
     end
 
     # @param [Boolean] sanitize Clean malicious after scanning?
@@ -73,7 +76,7 @@ module FileSentry
       rules << 'sanitize' if sanitize
       rules << 'unarchive' if unarchive || archive_pwd
 
-      api_headers = {}
+      api_headers = { 'content-type' => 'application/octet-stream', 'transfer-encoding' => 'chunked' }
       api_headers['rule'] = rules.join(',') unless rules.empty?
       api_headers['archivepwd'] = archive_pwd if archive_pwd
 

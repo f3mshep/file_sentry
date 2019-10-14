@@ -35,6 +35,11 @@ module FileSentry
       api_wrapper.scan_file sanitize, unarchive, archive_pwd
     end
 
+    # @return [Boolean] Scanned file is infected?
+    def infected?
+      scan_results && scan_results['scan_all_result_i'].to_i.nonzero?
+    end
+
     private
 
     # @raise [ArgumentError] If the file not found or it's size is reached the maximum limit

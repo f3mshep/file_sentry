@@ -2,6 +2,9 @@
 
 require 'bundler/setup'
 require 'file_sentry'
+require 'file_sentry/command_line'
+
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

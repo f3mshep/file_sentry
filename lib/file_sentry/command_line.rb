@@ -56,19 +56,19 @@ module FileSentry
       results = op_file.scan_results
       raise 'Scan not completed.' unless results
 
+      print_scan_results results['scan_details']
+
       puts
       puts
       puts "Filename: #{File.basename(op_file.filepath)}"
-      puts 'Overall Status: ' + get_scan_status(results)
+      print_scan_status results
 
-      print_scan_results results['scan_details']
+      # print_sanitized_file(results['sanitized']) if options[:sanitize] && op_file.infected?
     end
 
     # @param [Hash] results Scan results
-    # @return [String]
-    def get_scan_status(results)
-      status = results['scan_all_result_i'].to_i
-      results['scan_all_result_a'].to_s.color(status.zero? ? :green : :red)
+    def print_scan_status(results)
+      puts 'Overall Status: ' + results['scan_all_result_a'].to_s.color(op_file.infected? ? :red : :green)
     end
 
     # @param [Hash] scan_details
