@@ -22,6 +22,7 @@ module FileSentry
 
       # default request headers
       headers 'apikey' => config.access_key
+      headers 'Accept-encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' if config.enable_gzip
 
       if config.is_debug
         debug_output
@@ -84,15 +85,16 @@ module FileSentry
       error_check(response)
     end
 
+    # @param [Array<Integer>] ok_on
     # @return [Hash] Scan reports
     # @raise [RuntimeError] If file hash was not set
     # @raise [TypeError] If invalid API response
     # @raise [HTTParty::ResponseError] If API response status is not OK
-    def report_by_hash
+    def report_by_hash(ok_on = nil)
       raise 'No hash set.' unless op_file.hash
 
       response = self.class.get '/hash/' + op_file.hash
-      error_check(response, [200, 404])
+      error_check(response, ok_on || [200, 404])
     end
 
     # @return [Hash] Scan reports

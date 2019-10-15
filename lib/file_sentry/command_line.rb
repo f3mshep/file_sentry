@@ -7,7 +7,7 @@ module FileSentry
   # @attr [String] filepath
   # @attr [Hash] options
   # @attr [OpFile] op_file
-  class CommandLine # rubocop:disable Metrics/ClassLength
+  class CommandLine
     attr_accessor :filepath, :options, :op_file
 
     # @param [Array] args
@@ -18,6 +18,7 @@ module FileSentry
     # @option options [Boolean] :archive  Support scanning archive contents
     # @option options [String] :password  For password-protected archive
     # @option options [String] :key       API key
+    # @option options [Boolean] :zip      Support HTTP compression?
     # @option options [Integer] :limit    File size limit in MB
     # @option options [Integer] :timeout  Scanning timeout in seconds
     # @option options [Boolean] :debug
@@ -37,7 +38,7 @@ module FileSentry
     def start_utility
       parse_arguments @args
 
-      options[:key] = load_api_key
+      load_api_key
       config_app options
 
       op_file.filepath ||= filepath
@@ -63,7 +64,7 @@ module FileSentry
       puts "Filename: #{File.basename(op_file.filepath)}"
       print_scan_status results
 
-      # print_sanitized_file(results['sanitized']) if options[:sanitize] && op_file.infected?
+      # TODO: print_sanitized_file(results['sanitized']) if options[:sanitize] && op_file.infected?
     end
 
     # @param [Hash] results Scan results
@@ -115,7 +116,7 @@ module FileSentry
     # @raise [RuntimeError] If scanning timeout or no hash/data_id set during runtime
     # @raise [TypeError] If invalid API response
     # @raise [HTTParty::ResponseError] If API response status is not OK
-    def process_file(opts)
+    def process_file(opts = options)
       op_file.process_file(
         opts[:encryption] || 'md5',
         sanitize: opts[:sanitize],
@@ -144,13 +145,14 @@ module FileSentry
       opts.on('-e', '--encryption [MD5]', 'Hash digest for the file (md5 sha1 sha256)')
 
       opts.on('-s', '--[no-]sanitize', 'Clean malicious after scanning')
-      opts.on('-a', '--[no-]archive', 'Support scanning archive contents')
+      opts.on('-a', '--[no-]archive', 'Support scanning archive contents (Enabled)')
       opts.on('-p', '--password [ARCHIVE_PWD]', 'For password-protected archive')
     end
 
     # @param [OptionParser] opts
     def init_parser_options(opts)
       opts.on('-k', '--key [API_KEY]', 'API key')
+      opts.on('-z', '--[no-]zip', 'Support HTTP compression (Enabled)')
       opts.on('-l', '--limit [140]', Integer, 'File size limit in MB')
       opts.on('-t', '--timeout [120]', Integer, 'Scanning timeout in seconds')
 
@@ -178,12 +180,15 @@ module FileSentry
 
     # @param [Hash] opts
     # @option opts [String] :key      API key
+    # @option opts [Boolean] :zip     Support HTTP compression?
     # @option opts [Integer] :limit   File size limit in MB
     # @option opts [Integer] :timeout Scanning timeout in seconds
     # @option opts [Boolean] :debug
-    def config_app(opts)
+    def config_app(opts = options)
       FileSentry.configure do |config|
         config.access_key = opts[:key]
+        config.enable_gzip = !opts.key?(:zip) || opts[:zip]
+
         config.max_file_size = opts[:limit] if opts.key?(:limit)
         config.scan_timeout = opts[:timeout] if opts.key?(:timeout)
 
@@ -197,18 +202,16 @@ module FileSentry
       @config_file ||= File.join(Dir.home, '.file_sentry')
     end
 
-    # @return [String]
     def load_api_key
       key = options[:key]
-
       if key
         save_key key
       else
         key = File.read(config_file) if File.size?(config_file)
-        key = input_api_key if !key || key.empty?
-      end
 
-      key
+        key = input_api_key if !key || key.empty?
+        options[:key] = key
+      end
     end
 
     # @return [String]
