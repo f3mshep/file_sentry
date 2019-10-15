@@ -1,129 +1,119 @@
 # frozen_string_literal: true
 
-module FileSentry
-  BAD_API_KEY = 'BadApiKey'
-  BAD_HASH = 'IAmNotReal'
+BAD_API_KEY = 'BadApiKey'
+BAD_HASH    = 'IAmNotReal'
 
-  MOCK_HASH = '3A93D4CCEF8CFDE41DF8F543852B4A43'
-  MOCK_DATA_ID = 'dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6'
+RSpec.describe FileSentry::ApiWrapper do # rubocop:disable Metrics/BlockLength
+  before :each do
+    @op_file = FileSentry::OpFile.new(filepath: test_file_path)
+    @op_file.file_hash.hash_file('md5')
+    @api_wrapper = @op_file.api_wrapper
+  end
 
-  API_HEADERS = { apikey: ENV['OPSWAT_KEY'] }.freeze
-  JSON_HEADERS = { content_type: 'application/json' }.freeze
+  describe '.new' do
+    it 'initializes with a op_file instance' do
+      expect(@api_wrapper).to be_kind_of(described_class)
 
-  # API output
-  JSON_SCAN_REPORTS = File.read File.expand_path('../data/test_file_scan_reports.json', __FILE__)
+      expect(@api_wrapper.op_file).to eq(@op_file)
+    end
+  end
 
-  RSpec.describe ApiWrapper do # rubocop:disable Metrics/BlockLength
-    BASE_URL = described_class.base_uri
+  # generally I treat private methods as black boxes,
+  # but these API calls make or break the application,
+  # and I do not expect them to change too much.
 
-    before :each do
-      @op_file = OpFile.new filepath: File.expand_path('../data/test_file.txt', __FILE__)
-      @op_file.file_hash.hash_file('md5')
-      @api_wrapper = @op_file.api_wrapper
+  describe '#report_by_data_id' do
+    it 'makes a GET request to the appropriate OPSWAT endpoint' do
+      @op_file.data_id = data_id = mock_data_id
+      stub_api_data_id_report data_id
 
-      # API Stub responses
-      # GET hash stub (hash exists)
-      stub_request(:get, "#{BASE_URL}/hash/#{MOCK_HASH}")
-        .with(headers: API_HEADERS)
-        .to_return(status: [200, 'OK'], body: JSON_SCAN_REPORTS, headers: JSON_HEADERS)
-
-      # GET hash stub (hash does not exist)
-      stub_request(:get, "#{BASE_URL}/hash/#{BAD_HASH}")
-        .with(headers: API_HEADERS)
-        .to_return(
-          status: [404, 'Not Found'],
-          body: '{"error":{"code":404003,"messages":["The hash was not found"]}}',
-          headers: JSON_HEADERS
-        )
-
-      # Invalid API
-      stub_request(:get, "#{BASE_URL}/hash/#{MOCK_HASH}")
-        .with(headers: { apikey: BAD_API_KEY })
-        .to_return(status: [401, 'Invalid Apikey'], body: '{}', headers: JSON_HEADERS)
-
-      # GET data_id
-      stub_request(:get, "#{BASE_URL}/file/#{MOCK_DATA_ID}")
-        .with(headers: API_HEADERS)
-        .to_return(status: [200, 'OK'], body: JSON_SCAN_REPORTS, headers: JSON_HEADERS)
-
-      # POST file
-      stub_request(:post, "#{BASE_URL}/file/")
-        .with(
-          headers: API_HEADERS.merge('content-type' => 'application/octet-stream'),
-          body: File.read(@op_file.filepath, mode: 'rb')
-        )
-        .to_return(status: [200, 'OK'], body: '{"data_id":"' + MOCK_DATA_ID + '"}', headers: JSON_HEADERS)
+      @api_wrapper.send(:report_by_data_id)
+      expect(WebMock).to have_requested(:get, "#{base_url}/file/#{data_id}").with(headers: request_headers)
     end
 
-    describe '.new' do
-      it 'initializes with a op_file instance' do
-        expect(@api_wrapper).to be_kind_of(described_class)
+    it 'returns a hash containing the response body' do
+      @op_file.data_id = data_id = mock_data_id
+      stub_api_data_id_report data_id
 
-        expect(@api_wrapper.op_file).to eq(@op_file)
-      end
+      response = @api_wrapper.send(:report_by_data_id)
+      expect(response['data_id']).to eq(data_id)
     end
 
-    # generally I treat private methods as black boxes,
-    # but these API calls make or break the application,
-    # and I do not expect them to change too much.
+    it 'raise error while requesting with invalid data_id' do
+      @op_file.data_id = BAD_HASH
+      stub_api_data_id_report BAD_HASH, not_found: true
 
-    describe '#report_by_data_id' do
-      it 'makes a GET request to the appropriate OPSWAT endpoint' do
-        @op_file.data_id = MOCK_DATA_ID
-        @api_wrapper.send(:report_by_data_id)
-        expect(WebMock).to have_requested(:get, "#{BASE_URL}/file/#{MOCK_DATA_ID}").with(headers: API_HEADERS)
-      end
+      expect { @api_wrapper.send(:report_by_data_id) }.to raise_error(/\bWas not found$/i)
+    end
+  end
 
-      it 'returns a hash containing the response body' do
-        @op_file.data_id = MOCK_DATA_ID
-        response = @api_wrapper.send(:report_by_data_id)
-        expect(response['data_id']).to eq(MOCK_DATA_ID)
-      end
+  describe '#report_by_hash' do
+    it 'makes a GET request with an existing hash' do
+      stub_api_hash_report hash = mock_hash
+
+      @api_wrapper.send(:report_by_hash)
+      expect(WebMock).to have_requested(:get, "#{base_url}/hash/#{hash}")
     end
 
-    describe '#report_by_hash' do
-      it 'makes a GET request with an existing hash' do
-        @api_wrapper.send(:report_by_hash)
-        expect(WebMock).to have_requested(:get, "#{BASE_URL}/hash/#{MOCK_HASH}")
-      end
+    it 'makes a GET request with non-existing hash' do
+      @op_file.hash = BAD_HASH
+      stub_api_hash_report BAD_HASH, not_found: true
 
-      it 'makes a GET request without existing hash' do
-        @op_file.hash = BAD_HASH
-        response = @api_wrapper.send(:report_by_hash)
-        expect(response.dig('error', 'code')).to eq(404_003)
-      end
-
-      it 'returns a hash containing the response body' do
-        response = @api_wrapper.send(:report_by_hash)
-        expect(response['data_id']).to eq(MOCK_DATA_ID)
-      end
+      response = @api_wrapper.send(:report_by_hash)
+      expect(response['data_id']).to be_nil
+      expect(response.dig('error', 'code')).to eq(404_001)
     end
 
-    describe '#upload_file' do
-      it 'makes a POST request with a file to the appropriate OPSWAT endpoint' do
-        @api_wrapper.send(:upload_file)
-        expect(WebMock).to have_requested(:post, "#{BASE_URL}/file/").with(headers: API_HEADERS)
-      end
+    it 'raise error while requesting without existing hash' do
+      @op_file.hash = BAD_HASH
+      stub_api_hash_report BAD_HASH, not_found: true
 
-      it 'returns a hash containing the response body' do
-        response = @api_wrapper.send(:upload_file)
-        expect(response['data_id']).to eq(MOCK_DATA_ID)
-      end
+      expect { @api_wrapper.send(:report_by_hash, [200]) }.to raise_error(/\bWas not found$/i)
     end
 
-    describe '#scan_file' do
-      it 'scans file with OPSWAT' do
-        @api_wrapper.scan_file
+    it 'returns a hash containing the response body' do
+      stub_api_hash_report mock_hash
+
+      response = @api_wrapper.send(:report_by_hash)
+      expect(response['data_id']).to eq(mock_data_id)
+    end
+  end
+
+  describe '#upload_file' do
+    it 'makes a POST request with a file to the appropriate OPSWAT endpoint' do
+      stub_api_post_file
+      @api_wrapper.send(:upload_file, true)
+
+      req_headers = request_headers extra: { 'content-type' => 'application/octet-stream', rule: 'sanitize,unarchive' }
+      expect(WebMock).to have_requested(:post, "#{base_url}/file/").with(headers: req_headers)
+    end
+
+    it 'returns a hash containing the response body' do
+      stub_api_post_file
+
+      response = @api_wrapper.send(:upload_file)
+      expect(response['data_id']).to eq(mock_data_id)
+    end
+  end
+
+  describe '#scan_file' do
+    it 'scans file with OPSWAT' do
+      stub_api_hash_report mock_hash, not_found: true
+      stub_api_post_file
+      stub_api_data_id_report mock_data_id
+
+      response = @api_wrapper.scan_file
+      expect(response).to have_key('scan_details')
+    end
+
+    it 'raises error if API raises error' do
+      FileSentry.configure do |config|
+        config.access_key = BAD_API_KEY
+        described_class.configure config
       end
 
-      it 'raises error if API raises error' do
-        FileSentry.configure do |config|
-          config.access_key = BAD_API_KEY
-          described_class.configure config
-        end
-
-        expect { @api_wrapper.scan_file }.to raise_error(/^Error: Invalid Apikey\b/i)
-      end
+      stub_api_hash_report mock_hash, bad_key: BAD_API_KEY
+      expect { @api_wrapper.scan_file }.to raise_error(/^Error: Invalid API key\b/i)
     end
   end
 end

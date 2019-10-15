@@ -4,7 +4,7 @@ require 'bundler/setup'
 require 'file_sentry'
 require 'file_sentry/command_line'
 
-require 'webmock/rspec'
+require_relative 'webmock_helper'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -17,9 +17,11 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  config.include WebMockHelper
+
   config.before :all do
     FileSentry.configure do |cfg|
-      cfg.access_key = ENV['OPSWAT_KEY']
+      cfg.access_key = opswat_key
       cfg.is_debug = true
     end
   end

@@ -21,13 +21,13 @@ module FileSentry
       config ||= FileSentry.configuration
 
       # default request headers
-      headers 'apikey' => config.access_key
-      headers 'Accept-encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' if config.enable_gzip
+      accept_enc = config.enable_gzip && !config.is_debug ? 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' : nil
+      headers 'apikey' => config.access_key, 'Accept-encoding' => accept_enc
 
-      if config.is_debug
+      if config.is_debug.is_a?(TrueClass)
         debug_output
       else
-        debug_output nil
+        debug_output config.is_debug || nil
       end
     end
 
