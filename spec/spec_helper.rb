@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'simplecov'
+SimpleCov.start
+
 require 'bundler/setup'
 require 'file_sentry'
 require 'file_sentry/command_line'
 
+require 'webmock/rspec'
 require_relative 'webmock_helper'
 
 RSpec.configure do |config|

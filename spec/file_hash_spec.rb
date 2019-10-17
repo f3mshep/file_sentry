@@ -2,7 +2,7 @@
 
 RSpec.describe FileSentry::FileHash do
   before :all do
-    @op_file = FileSentry::OpFile.new(filepath: test_file_path)
+    @op_file = FileSentry::OpFile.new(filepath: test_file_path(@infected = rand(2).zero?))
     @file_hash = @op_file.file_hash
   end
 
@@ -16,7 +16,8 @@ RSpec.describe FileSentry::FileHash do
     %w[MD5 Sha1 sha256].each do |encrypt|
       it "can generate a #{encrypt} hash" do
         @file_hash.hash_file(encrypt)
-        expect(@op_file.hash).to eq(mock_hash(encrypt: encrypt.downcase))
+
+        expect(@op_file.hash).to eq(mock_hash(encrypt: encrypt.downcase, infected: @infected))
       end
     end
   end

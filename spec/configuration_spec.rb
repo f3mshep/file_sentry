@@ -6,8 +6,9 @@ RSpec.describe FileSentry::Configuration do
   end
 
   it 'verify default configuration' do
-    # @type [FileSentry::Configuration]
-    config = described_class.new
+    old_config = FileSentry.configuration
+    config = FileSentry.reset
+    FileSentry.configuration = old_config
 
     expect(config.access_key).to be_nil
     expect(config.enable_gzip).to eq(true)

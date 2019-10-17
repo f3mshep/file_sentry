@@ -1,6 +1,11 @@
 {
   "file_id": "bzE5MTAxMFNrbWJQeHozdXI",
   "data_id": "YnpFNU1UQXhNRk5yYldKUWVIb3pkWElya2ZmVVhoZEg",
+  "sanitized": {
+    "file_path": "http://s3.us-west-2.amazonaws.com/d.files.metadefender.com/dt%3D191014/BJfsZFyMFB.sanitized",
+    "data_id": "ZDE5MTAxNEJKZnNaRnlNRkIuc2FuaXRpemVkSEprTUYxTUty",
+    "result": "Processing"
+  },
   "process_info": {
     "result": "Blocked",
     "progress_percentage": 100,

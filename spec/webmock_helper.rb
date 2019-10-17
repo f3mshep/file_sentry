@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'json'
-require 'webmock/rspec'
 
 module WebMockHelper
   RESPONSE_HEADERS = { content_type: 'application/json; charset=utf-8' }.freeze
@@ -17,6 +16,11 @@ module WebMockHelper
   end
 
   # @return [String]
+  def mock_sanitized(data_id = false)
+    infected_scan_reports.dig('sanitized', data_id ? 'data_id' : 'file_path')
+  end
+
+  # @return [String]
   def test_file_path(infected = false)
     File.expand_path '../data/' + (infected ? 'fake_infected_file.mean' : 'test_file.txt'), __FILE__
   end
@@ -27,13 +31,16 @@ module WebMockHelper
   end
 
   # @return [String]
-  def opswat_key
-    ENV['OPSWAT_KEY']
+  def opswat_key(key = false)
+    return ENV['OPSWAT_KEY'] if key.is_a?(FalseClass)
+
+    ENV['OPSWAT_KEY'] = key
   end
 
   # @return [Hash]
   def request_headers(bad_key = false, extra: {})
-    extra.merge(apikey: bad_key ? bad_key.to_s : opswat_key)
+    key = bad_key ? bad_key.to_s : opswat_key
+    key ? extra.merge(apikey: key) : extra
   end
 
   def stub_api_hash_report(hash, infected: false, bad_key: false, not_found: false)
@@ -64,7 +71,20 @@ module WebMockHelper
       )
       .to_return(
         status: response_status(bad_key: bad_key),
-        body: response_body(infected: infected, bad_key: bad_key).select { |k, _| k[/^data_id|error$/] }.to_json,
+        body: response_body(bad_key: bad_key, data: { data_id: mock_data_id(infected: infected) }).to_json,
+        headers: RESPONSE_HEADERS
+      )
+  end
+
+  def stub_api_sanitized_url(data_id, bad_key: false)
+    not_found = data_id != mock_sanitized(true)
+    response_data = { sanitizedFilePath: mock_sanitized }
+
+    stub_request(:get, "#{base_url}/file/converted/#{data_id}")
+      .with(headers: request_headers(bad_key))
+      .to_return(
+        status: response_status(bad_key: bad_key, not_found: not_found),
+        body: response_body(bad_key: bad_key, not_found: not_found, data: response_data).to_json,
         headers: RESPONSE_HEADERS
       )
   end
@@ -83,25 +103,18 @@ module WebMockHelper
 
   # @return [Array]
   def response_status(bad_key: false, not_found: false)
-    if bad_key || !opswat_key
-      [401, 'Unauthorized']
-    elsif not_found
-      [404, 'Not Found']
-    else
-      [200, 'OK']
-    end
+    return [401, 'Unauthorized'] if bad_key || !opswat_key
+
+    not_found ? [404, 'Not Found'] : [200, 'OK']
   end
 
   # @return [Hash]
-  def response_body(infected: false, bad_key: false, not_found: false)
-    if bad_key
-      { error: { code: 401_006, messages: ['Invalid API key'] } }
-    elsif !opswat_key
-      { error: { code: 401_001, messages: ['Authentication strategy is invalid'] } }
-    elsif not_found
-      { error: { code: 404_001, messages: ['The item was not found'] } }
-    else
-      infected ? infected_scan_reports : test_scan_reports
-    end
+  def response_body(infected: false, bad_key: false, not_found: false, data: nil)
+    return { error: { code: 401_006, messages: ['Invalid API key'] } } if bad_key
+    return { error: { code: 401_001, messages: ['Authentication strategy is invalid'] } } unless opswat_key
+    return { error: { code: 404_001, messages: ['The item was not found'] } } if not_found
+    return data if data
+
+    infected ? infected_scan_reports : test_scan_reports
   end
 end
