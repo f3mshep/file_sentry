@@ -40,6 +40,17 @@ module FileSentry
       scan_results && scan_results['scan_all_result_i'].to_i.nonzero?
     end
 
+    # @return [String] Download URL for sanitized file
+    # @raise [RuntimeError] If no sanitized results found or sanitized data_id was not set
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def sanitized_url
+      results = scan_results&.dig('sanitized')
+      raise 'No sanitized results found.' unless results
+
+      results['file_path'] || api_wrapper.get_sanitized_url(results['data_id'])
+    end
+
     private
 
     # @raise [ArgumentError] If the file not found or it's size is reached the maximum limit

@@ -9,7 +9,7 @@ require 'file_sentry/api_wrapper'
 module FileSentry
   # All methods in this block are static
   class << self
-    # attr_accessor :configuration
+    attr_writer :configuration
 
     # @return [Configuration]
     def configuration

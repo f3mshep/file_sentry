@@ -46,6 +46,38 @@ module FileSentry
       monitor_scan response
     end
 
+    # @param [String] url       Absolute URL
+    # @param [String] filepath  File to save to
+    # @param [Boolean] use_api  Use this as HTTP client?
+    # @return [Boolean]  Success?
+    # @raise [TypeError] When response non-success status code
+    def download_file(url, filepath, use_api: false)
+      response = nil
+
+      File.open(filepath, 'wb') do |file|
+        response = (use_api ? self.class : HTTParty).get(url, stream_body: true) do |fragment|
+          code = fragment.code
+          raise TypeError, "Non-success status code while streaming: #{code}" unless [200, 301, 302].include?(code)
+
+          file.write fragment if code == 200
+        end
+      end
+
+      response&.success?
+    end
+
+    # @param [String] data_id
+    # @return [String] Download URL for sanitized file
+    # @raise [RuntimeError] If sanitized data_id was not set
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def get_sanitized_url(data_id)
+      raise 'No sanitized data_id set.' if !data_id || data_id.empty?
+
+      response = self.class.get '/file/converted/' + data_id
+      error_check(response)['sanitizedFilePath']
+    end
+
     private
 
     # @param [Hash] response Scanning status
@@ -63,6 +95,7 @@ module FileSentry
         response = report_by_data_id
       end
 
+      response['scan_results']['sanitized'] = response['sanitized'] if response.key?('sanitized')
       op_file.scan_results = response['scan_results']
     end
 
@@ -116,10 +149,12 @@ module FileSentry
 
     # @param [Hash] response
     # @param [String] hash
+    # @return [Boolean]
     def does_hash_exist?(response, hash)
-      response.any? do |_, val|
-        (val.is_a?(String) && hash.casecmp(val).zero?) || (val.is_a?(Hash) && does_hash_exist?(val, hash))
-      end
+      # response.any? do |_, val|
+      #   (val.is_a?(String) && hash.casecmp(val).zero?) || (val.is_a?(Hash) && does_hash_exist?(val, hash))
+      # end
+      response['file_info']&.value?(hash)
     end
 
     # @param [HTTParty::Response] response
@@ -158,6 +193,7 @@ module FileSentry
     # @return [Integer]
     def find_progress(response)
       (response.dig('scan_results', 'progress_percentage') ||
+        response.dig('process_info', 'progress_percentage') ||
         response.dig('scan_results', 'scan_details', 'progress_percentage')).to_i
     end
   end

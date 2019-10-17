@@ -12,6 +12,3 @@ Metrics/LineLength:
 
 Style/ExpandPathArguments:
   Enabled: false
-
-Metrics/ClassLength:
-  Max: 150
