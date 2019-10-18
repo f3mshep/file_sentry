@@ -26,8 +26,11 @@ RSpec.describe FileSentry::ApiWrapper do
         described_class.configure config
       end
 
-      stub_api_hash_report mock_hash(infected: @infected, encrypt: @encrypt), bad_key: BAD_API_KEY
+      stub_api_hash_report hash = mock_hash(infected: @infected, encrypt: @encrypt), bad_key: BAD_API_KEY
       expect { @api_wrapper.scan_file }.to raise_error(/^Error: Invalid API key\b/i)
+
+      req_headers = { 'accept-encoding' => /\bGZip\b/i }
+      expect(WebMock).to have_requested(:get, "#{base_url}/hash/#{hash}").with(headers: req_headers)
     end
   end
 end

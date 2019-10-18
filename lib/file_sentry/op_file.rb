@@ -51,6 +51,24 @@ module FileSentry
       results['file_path'] || api_wrapper.get_sanitized_url(results['data_id'])
     end
 
+    # @param [String] save_to   File path to save to
+    # @param [Boolean] use_api  Use API key for requesting
+    # @return [Boolean] Success?
+    # @raise [TypeError] If invalid API response
+    # @raise [HTTParty::ResponseError] If API response status is not OK
+    def download_sanitized(save_to = nil, use_api: false)
+      url = sanitized_url
+      return false unless url
+
+      save_to ||= filepath + '.sanitized'
+      api_wrapper.download_file url, save_to, use_api: use_api
+
+    # Returns FALSE if no sanitized results found or sanitized data_id was not set
+    rescue RuntimeError => e
+      warn e if FileSentry.configuration.is_debug
+      false
+    end
+
     private
 
     # @raise [ArgumentError] If the file not found or it's size is reached the maximum limit

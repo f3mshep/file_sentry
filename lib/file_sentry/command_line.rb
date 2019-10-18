@@ -119,7 +119,7 @@ module FileSentry
       print_scan_results results['scan_details']
 
       print_overall_status results
-      print_sanitized_file if options[:sanitize] && op_file.infected?
+      print_sanitized_file if options[:sanitize] && results.key?('sanitized')
     end
 
     # @param [Hash] scan_results

@@ -38,12 +38,14 @@ module WebMockHelper
   end
 
   # @return [Hash]
-  def request_headers(bad_key = false, extra: {})
+  def request_headers(bad_key = nil, extra: {})
     key = bad_key ? bad_key.to_s : opswat_key
-    key ? extra.merge(apikey: key) : extra
+    extra['apikey'] = key if key
+    extra['accept-encoding'] = /\bGZip\b/i unless FileSentry.configuration.is_debug
+    extra
   end
 
-  def stub_api_hash_report(hash, infected: false, bad_key: false, not_found: false)
+  def stub_api_hash_report(hash, infected: false, bad_key: nil, not_found: false)
     stub_request(:get, "#{base_url}/hash/#{hash}")
       .with(headers: request_headers(bad_key))
       .to_return(
@@ -53,7 +55,7 @@ module WebMockHelper
       )
   end
 
-  def stub_api_data_id_report(data_id, infected: false, bad_key: false, not_found: false)
+  def stub_api_data_id_report(data_id, infected: false, bad_key: nil, not_found: false)
     stub_request(:get, "#{base_url}/file/#{data_id}")
       .with(headers: request_headers(bad_key))
       .to_return(
@@ -63,7 +65,7 @@ module WebMockHelper
       )
   end
 
-  def stub_api_post_file(infected: false, bad_key: false)
+  def stub_api_post_file(infected: false, bad_key: nil)
     stub_request(:post, "#{base_url}/file/")
       .with(
         headers: request_headers(bad_key, extra: { 'content-type' => 'application/octet-stream' }),
@@ -76,7 +78,7 @@ module WebMockHelper
       )
   end
 
-  def stub_api_sanitized_url(data_id, bad_key: false)
+  def stub_api_sanitized_url(data_id, bad_key: nil)
     not_found = data_id != mock_sanitized(true)
     response_data = { sanitizedFilePath: mock_sanitized }
 
@@ -86,6 +88,18 @@ module WebMockHelper
         status: response_status(bad_key: bad_key, not_found: not_found),
         body: response_body(bad_key: bad_key, not_found: not_found, data: response_data).to_json,
         headers: RESPONSE_HEADERS
+      )
+  end
+
+  def stub_api_download_file(url, response_file = nil)
+    not_found = !response_file || response_file.empty?
+    filename = not_found ? 'Unknown' : File.basename(response_file)
+
+    stub_request(:get, url)
+      .to_return(
+        status: response_status(not_found: not_found),
+        body: not_found ? nil : File.read(response_file, mode: 'rb'),
+        headers: { content_type: 'application/octet-stream', content_disposition: "attachment; filename=#{filename}" }
       )
   end
 
@@ -102,14 +116,14 @@ module WebMockHelper
   end
 
   # @return [Array]
-  def response_status(bad_key: false, not_found: false)
+  def response_status(bad_key: nil, not_found: false)
     return [401, 'Unauthorized'] if bad_key || !opswat_key
 
     not_found ? [404, 'Not Found'] : [200, 'OK']
   end
 
   # @return [Hash]
-  def response_body(infected: false, bad_key: false, not_found: false, data: nil)
+  def response_body(infected: false, bad_key: nil, not_found: false, data: nil)
     return { error: { code: 401_006, messages: ['Invalid API key'] } } if bad_key
     return { error: { code: 401_001, messages: ['Authentication strategy is invalid'] } } unless opswat_key
     return { error: { code: 404_001, messages: ['The item was not found'] } } if not_found
