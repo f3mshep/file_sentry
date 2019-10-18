@@ -13,7 +13,7 @@ module FileSentry
         options[:file] = rest.first if rest && !rest.empty?
         options
       rescue RuntimeError => e
-        warn e.to_s.color(:white)
+        warn e # to_s.color(:white)
         puts parser
         exit
       end

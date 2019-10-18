@@ -17,12 +17,13 @@ module FileSentry
       self.class.configure
     end
 
-    def self.configure(config = nil)
-      config ||= FileSentry.configuration
-
+    def self.configure(config = FileSentry.configuration)
       # default request headers
-      accept_enc = config.enable_gzip && !config.is_debug ? 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' : nil
-      headers 'apikey' => config.access_key, 'Accept-encoding' => accept_enc
+      headers(
+        'apikey' => config.access_key,
+        'Accept-encoding' => config.enable_gzip && !config.is_debug ? 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' : nil
+      )
+      default_options[:headers].delete_if { |_, v| v.nil? }
 
       if config.is_debug.is_a?(TrueClass)
         debug_output
