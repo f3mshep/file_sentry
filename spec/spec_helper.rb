@@ -27,6 +27,7 @@ RSpec.configure do |config|
     FileSentry.configure do |cfg|
       cfg.access_key = opswat_key
       cfg.is_debug = true
+      cfg.enable_gzip = false
     end
   end
 end

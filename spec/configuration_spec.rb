@@ -24,6 +24,7 @@ RSpec.describe FileSentry::Configuration do
 
     expect(config.access_key).to be_truthy
     expect(config.access_key).to eq(opswat_key)
+    expect(config.enable_gzip).to eq(false)
 
     expect(config.max_file_size).to eq(140)
     expect(config.scan_timeout).to eq(120)

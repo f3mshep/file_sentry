@@ -21,7 +21,7 @@ module FileSentry
       # default request headers
       headers(
         'apikey' => config.access_key,
-        'Accept-encoding' => config.enable_gzip && !config.is_debug ? 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' : nil
+        'Accept-encoding' => config.enable_gzip ? 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3' : nil
       )
       default_options[:headers].delete_if { |_, v| v.nil? }
 

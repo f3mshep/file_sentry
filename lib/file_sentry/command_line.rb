@@ -8,10 +8,12 @@ module FileSentry
     class << self
       # @param [Array] args
       def parse(args)
-        options = {}
-        rest = args ? parser.parse!(args, into: options) : nil
-        options[:file] = rest.first if rest && !rest.empty?
-        options
+        into = {}
+        rest = []
+        parser.send(:parse_in_order, args, proc { |name, val| into[name.to_sym] = val }, &rest.method(:<<)) if args
+
+        into[:file] = rest.first unless rest.empty?
+        into
       rescue RuntimeError => e
         warn e # to_s.color(:white)
         puts parser
@@ -47,7 +49,7 @@ module FileSentry
       # @param [OptionParser] opts
       def init_parser_options(opts)
         opts.on('-k', '--key [API_KEY]', 'API key')
-        opts.on('-z', '--[no-]zip', 'Support HTTP compression (Enabled)')
+        opts.on('-z', '--[no-]gzip', 'Support HTTP compression (Enabled)')
         opts.on('-l', '--limit [140]', Integer, 'File size limit in MB')
         opts.on('-t', '--timeout [120]', Integer, 'Scanning timeout in seconds')
 
@@ -75,7 +77,7 @@ module FileSentry
     # @option options [Boolean] :archive  Support scanning archive contents
     # @option options [String] :password  For password-protected archive
     # @option options [String] :key       API key
-    # @option options [Boolean] :zip      Support HTTP compression?
+    # @option options [Boolean] :gzip     Support HTTP compression?
     # @option options [Integer] :limit    File size limit in MB
     # @option options [Integer] :timeout  Scanning timeout in seconds
     # @option options [Boolean] :debug
@@ -193,14 +195,14 @@ module FileSentry
 
     # @param [Hash] opts
     # @option opts [String] :key      API key
-    # @option opts [Boolean] :zip     Support HTTP compression?
+    # @option opts [Boolean] :gzip    Support HTTP compression?
     # @option opts [Integer] :limit   File size limit in MB
     # @option opts [Integer] :timeout Scanning timeout in seconds
     # @option opts [Boolean] :debug
     def config_app(opts = options)
       FileSentry.configure do |config|
         config.access_key = opts[:key]
-        config.enable_gzip = !opts.key?(:zip) || opts[:zip]
+        config.enable_gzip = !opts.key?(:gzip) || opts[:gzip]
 
         config.max_file_size = opts[:limit] if opts.key?(:limit)
         config.scan_timeout = opts[:timeout] if opts.key?(:timeout)

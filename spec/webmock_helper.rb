@@ -41,7 +41,7 @@ module WebMockHelper
   def request_headers(bad_key = nil, extra: {})
     key = bad_key ? bad_key.to_s : opswat_key
     extra['apikey'] = key if key
-    extra['accept-encoding'] = /\bGZip\b/i unless FileSentry.configuration.is_debug
+    extra['accept-encoding'] = /\bGZip\b/i if FileSentry.configuration.enable_gzip
     extra
   end
 

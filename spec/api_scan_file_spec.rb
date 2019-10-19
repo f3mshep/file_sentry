@@ -22,7 +22,7 @@ RSpec.describe FileSentry::ApiWrapper do
     it 'raises error when processing with invalid API key' do
       FileSentry.configure do |config|
         config.access_key = BAD_API_KEY
-        config.is_debug = false
+        config.enable_gzip = !(config.is_debug = false)
         described_class.configure config
       end
 
