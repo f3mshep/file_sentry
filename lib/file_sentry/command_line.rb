@@ -1,3 +1,4 @@
+# encoding: UTF-8
 # frozen_string_literal: true
 
 require 'optparse'
@@ -70,8 +71,10 @@ module FileSentry
     attr_accessor :filepath, :options, :op_file
 
     # @param [Array] args
-    # @param [String] filepath
-    # @param [Hash] options
+    # @param [Hash] opts
+    # @option opts [String] :filepath
+    # @option opts [Hash] :options
+    # @option opts [OpFile] :op_file
     # @option options [String] :encryption
     # @option options [Boolean] :sanitize Clean malicious after scanning?
     # @option options [Boolean] :archive  Support scanning archive contents
@@ -81,12 +84,11 @@ module FileSentry
     # @option options [Integer] :limit    File size limit in MB
     # @option options [Integer] :timeout  Scanning timeout in seconds
     # @option options [Boolean] :debug
-    # @param [OpFile] op_file
-    def initialize(args = nil, filepath: nil, options: nil, op_file: nil)
+    def initialize(args = nil, opts = {})
       @args = args
-      self.filepath = filepath
-      self.options = options
-      self.op_file = op_file || OpFile.new(filepath: filepath)
+      self.filepath = opts[:filepath]
+      self.options = opts[:options]
+      self.op_file = opts[:op_file] || OpFile.new(opts[:filepath])
     end
 
     # @raise [ArgumentError] If the file not found or it's size is reached the maximum limit

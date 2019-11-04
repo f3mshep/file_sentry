@@ -11,7 +11,7 @@ module FileSentry
     attr_accessor :op_file
 
     # @param [OpFile] op_file
-    def initialize(op_file:)
+    def initialize(op_file)
       self.op_file = op_file
 
       self.class.configure
@@ -49,22 +49,23 @@ module FileSentry
 
     # @param [String] url       Absolute URL
     # @param [String] filepath  File to save to
-    # @param [Boolean] use_api  Use this as HTTP client?
+    # @param [Hash] opts
+    # @option opts [Boolean] :use_api Use this as HTTP client?
     # @return [Boolean]  Success?
     # @raise [TypeError] When response non-success status code
-    def download_file(url, filepath, use_api: false)
+    def download_file(url, filepath, opts = {})
       response = nil
 
       File.open(filepath, 'wb') do |file|
-        response = (use_api ? self.class : HTTParty).get(url, stream_body: true) do |fragment|
-          code = fragment.code
+        response = (opts[:use_api] ? self.class : HTTParty).get(url, stream_body: true) do |fragment|
+          code = fragment.is_a?(String) ? 200 : fragment.code
           raise TypeError, "Non-success status code while streaming: #{code}" unless [200, 301, 302].include?(code)
 
           file.write fragment if code == 200
         end
       end
 
-      response&.success?
+      response ? response.success? : nil
     end
 
     # @param [String] data_id
@@ -90,7 +91,7 @@ module FileSentry
       seconds = FileSentry.configuration.scan_timeout
 
       until scan_complete?(response)
-        raise 'Error: API timeout.' if seconds && (seconds -= 1).negative?
+        raise 'Error: API timeout.' if seconds && (seconds -= 1) <= 0
 
         sleep(1)
         response = report_by_data_id
@@ -155,7 +156,7 @@ module FileSentry
       # response.any? do |_, val|
       #   (val.is_a?(String) && hash.casecmp(val).zero?) || (val.is_a?(Hash) && does_hash_exist?(val, hash))
       # end
-      response['file_info']&.value?(hash)
+      (response['file_info'] || {}).value?(hash)
     end
 
     # @param [HTTParty::Response] response
@@ -180,7 +181,7 @@ module FileSentry
     # @param [Hash] data
     # @return [Object]
     def find_err_message(response, data)
-      err = data.is_a?(Hash) ? (data['err'] || data.dig('error', 'messages')&.first) : response.body
+      err = data.is_a?(Hash) ? (data['err'] || (data.fetch('error', {})['messages'] || []).first) : response.body
       err && !err.empty? ? err : response.message
     end
 
@@ -193,9 +194,9 @@ module FileSentry
     # @param [Hash] response
     # @return [Integer]
     def find_progress(response)
-      (response.dig('scan_results', 'progress_percentage') ||
-        response.dig('process_info', 'progress_percentage') ||
-        response.dig('scan_results', 'scan_details', 'progress_percentage')).to_i
+      (response.fetch('scan_results', {})['progress_percentage'] ||
+        response.fetch('process_info', {})['progress_percentage'] ||
+        response.fetch('scan_results', {}).fetch('scan_details', {})['progress_percentage']).to_i
     end
   end
 end

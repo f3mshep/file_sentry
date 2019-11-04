@@ -8,7 +8,7 @@ module FileSentry
     attr_accessor :op_file
 
     # @param [OpFile] op_file
-    def initialize(op_file:)
+    def initialize(op_file)
       self.op_file = op_file
     end
 
