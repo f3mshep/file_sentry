@@ -182,7 +182,7 @@ module FileSentry
     # @return [Object]
     def find_err_message(response, data)
       err = data.is_a?(Hash) ? (data['err'] || (data.fetch('error', {})['messages'] || []).first) : response.body
-      err && !err.empty? ? err : response.message
+      !err || err.empty? ? response.message : err
     end
 
     # @param [Hash] response

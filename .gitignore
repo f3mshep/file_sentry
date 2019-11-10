@@ -11,7 +11,7 @@
 .rspec_status
 
 /Gemfile.lock
-/.ruby-version
+.ruby-version
 *.gem
 /vendor/bundle
 
