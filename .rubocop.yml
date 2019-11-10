@@ -9,6 +9,9 @@ Style/Documentation:
 Metrics/LineLength:
   Max: 120
 
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
 Style/ExpandPathArguments:
   Enabled: false
 
