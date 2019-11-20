@@ -1,0 +1,50 @@
+{
+  "file_id": "bzE5MTAxMFNrbWJQeHozdXI",
+  "data_id": "YnpFNU1UQXhNRk5yYldKUWVIb3pkWElya2ZmVVhoZEg",
+  "sanitized": {
+    "file_path": "http://s3.us-west-2.amazonaws.com/d.files.metadefender.com/dt%3D191014/BJfsZFyMFB.sanitized",
+    "data_id": "ZDE5MTAxNEJKZnNaRnlNRkIuc2FuaXRpemVkSEprTUYxTUty",
+    "result": "Processing"
+  },
+  "process_info": {
+    "result": "Blocked",
+    "progress_percentage": 100,
+    "profile": "Large archive",
+    "file_type_skipped_scan": false,
+    "blocked_reason": "Infected"
+  },
+  "parent_data_id": "bzE5MTAxMFNrbWJQeHozdXJCeVZiRGx6bl9T",
+  "malware_family": "eicar",
+  "malware_type": ["unknown"],
+  "threat_name": "Unknown/Eicar!LxjIHJHt",
+  "scan_results": {
+    "scan_details": {
+      "Zillya!": {
+        "threat_found": "EICAR.TestFile",
+        "scan_time": 2,
+        "scan_result_i": 1,
+        "def_time": "2019-10-09T14:05:00.000Z"
+      }
+    },
+    "rescan_available": true,
+    "scan_all_result_i": 1,
+    "start_time": "2019-10-10T03:31:20.712Z",
+    "total_time": 28701,
+    "total_avs": 39,
+    "total_detected_avs": 36,
+    "progress_percentage": 100,
+    "scan_all_result_a": "Infected"
+  },
+  "file_info": {
+    "file_size": 68,
+    "upload_timestamp": "2019-10-10T03:31:20.481Z",
+    "md5": "44D88612FEA8A8F36DE82E1278ABB02F",
+    "sha1": "3395856CE81F2B7382DEE72602F798B642F14140",
+    "sha256": "275A021BBFB6489E54D471899F7DB9D1663FC695EC2FE2A2C4538AABF651FD0F",
+    "file_type_category": "",
+    "file_type_description": "EICAR virus test files",
+    "display_name": "samples\\eicar.com"
+  },
+  "share_file": 1,
+  "rest_version": "4"
+}

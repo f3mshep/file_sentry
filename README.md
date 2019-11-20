@@ -1,14 +1,13 @@
 # FileSentry
 
 FileSentry is a gem that scans a designated file for malware using a comprehensive suite of anti-malware engines.
-It displays results from each engine as well as a brief summary. FileSentry is powered by the OPSWAT Metadefender Cloud API. To use this gem, you will need to create an account with OPSWAT. Don't worry, it's free to sign up! 
+It displays results from each engine as well as a brief summary. FileSentry is powered by the OPSWAT MetaDefender Cloud API. To use this gem, you will need to create an account with OPSWAT. Don't worry, it's free to sign up!
 
-Please keep in mind you are still bound by OPSWAT's terms and conditions when you use this gem. Specifially, don't use this gem for commercial purposes unless you have a paid license through OPSWAT.
+Please keep in mind you are still bound by OPSWAT's terms and conditions when you use this gem. Specifically, don't use this gem for commercial purposes unless you have a paid license through OPSWAT.
 
 ## Installation
 
-First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.5.0, and might not work with older versions of Ruby.
-
+First, make sure you have the latest version of Ruby installed. FileSentry was developed using Ruby 2.3.0, and might not work with older versions of Ruby.
 If you do not have Ruby installed, you can find detailed instructions on my blog: [How to Install Ruby with rbenv](http://alexandrawright.net/posts/how_to_install_ruby_with_rbenv).
 
 To install the gem, enter the following in your terminal of choice:
@@ -18,28 +17,30 @@ To install the gem, enter the following in your terminal of choice:
 You can also clone this repo if you want to tweak FileSentry. Read the development section for more info if that floats your boat.
 
 ## Usage
+
 If you do not have an OPSWAT account/API key, visit [portal.opswat.com](https://portal.opswat.com/) to sign up. After creating an account, the "home" tab will display your OPSWAT API Key.
 
 After installation, to scan a file for malware enter the following command:
 
-    $ file_sentry RELATIVE_PATH_TO_FILE (Optional)HASH_DIGEST
-
+    $ file_sentry [OPTIONS] RELATIVE_PATH_TO_FILE
 
 If this is your first time running the application, you will be prompted to enter your API key.
 
 The RELATIVE_PATH_TO_FILE argument loads the specified file into FileSentry, relative to the current working directory. To enter a file name with spaces, use quotation marks or escape whitespace with a backslash.
 
-The HASH_DIGEST argument is optional. If the gem is ran without the HASH_DIGEST argument, FileSentry will default to MD5. Options are MD5, SHA256, and SHA1.
+Run the command-line without arguments or with `-h` switch to list all optional options (e.g. HASH_DIGEST, API_KEY,...).
 
-An example command to scan a readme in the current working directory using SHA256 is as follows:
-    
-    $ file_sentry readme.txt sha256
+An example command to scan/clean `README.md` file in the current working directory using `SHA256` digest is as follows:
+
+    $ file_sentry -e sha256 -s README.md
 
 You can change the API key at any time by running the gem without any command line arguments.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install development dependencies. Then, run `rspec` to run the tests. To install a local version of the gem, you can run `rake install`.
+After checking out the repo, run `bundle install` to install dependencies. Then, run `bundle exec rake` to run the tests.
+You can also run `irb -r bundler/setup -r file_sentry` for an interactive prompt that will allow you to experiment.
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
 

@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
-require_relative "../config/environment"
+# frozen_string_literal: true
 
+$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 
-filepath = ARGV[0]
-encryption = ARGV[1]
+require 'file_sentry'
+require 'file_sentry/command_line'
 
-op = CommandLine.new({filepath: filepath, encryption: encryption})
-op.start_utility
-
+FileSentry::CommandLine.new(ARGV).start_utility

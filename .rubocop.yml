@@ -1,0 +1,26 @@
+require: rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 2.3
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Style/ExpandPathArguments:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%w': '[]'
+
+Style/Encoding:
+  Enabled: false
+
+Layout/EndOfLine:
+  Enabled: false

@@ -1,0 +1,42 @@
+{
+  "file_id": "dDE4MDQxN0JKdHNNbTNRaHo",
+  "data_id": "dDE4MDQxN0JKdHNNbTNRaHpCSnFzTVgyUTN6",
+  "process_info": {
+    "result": "Allowed",
+    "progress_percentage": 100,
+    "profile": "File scan",
+    "file_type_skipped_scan": false,
+    "blocked_reason": ""
+  },
+  "scan_results": {
+    "scan_details": {
+      "nProtect": {
+        "threat_found": "",
+        "scan_time": 2957,
+        "scan_result_i": 0,
+        "def_time": "2018-04-17T05:00:00.000Z"
+      }
+    },
+    "rescan_available": true,
+    "scan_all_result_i": 0,
+    "start_time": "2018-04-17T17:47:01.988Z",
+    "total_time": 3021,
+    "total_avs": 37,
+    "total_detected_avs": 0,
+    "progress_percentage": 100,
+    "scan_all_result_a": "No Threat Detected"
+  },
+  "file_info": {
+    "file_size": 17,
+    "upload_timestamp": "2018-04-17T17:47:01.979Z",
+    "md5": "3A93D4CCEF8CFDE41DF8F543852B4A43",
+    "sha1": "0511263E3518679BF8297C93D551AAB7F2B93196",
+    "sha256": "EF748125CF8B36714F7D99ED170B664E27D545AAFE3C54EC85371EA48AAA35BA",
+    "file_type_category": "T",
+    "file_type_description": "ASCII text, with no line terminators",
+    "file_type_extension": "txt",
+    "display_name": "test_file.txt"
+  },
+  "share_file": 1,
+  "rest_version": "4"
+}
